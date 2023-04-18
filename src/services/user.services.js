@@ -1,8 +1,8 @@
-import user from "../models/Usuario"
+import usuario from "../models/Usuario.js"
 
-const create = (body) => user.create(body)
+const create = (body) => usuario.create(body)
 
 
-export {
+export default {
     create, 
 }

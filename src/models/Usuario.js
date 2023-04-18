@@ -1,24 +1,34 @@
-import mongoose, { Schema } from "mongoose";
-
-const usuarioSchema = new mongoose.Schema({
+import mongoose from "mongoose";
+import bcrypt from "bcrypt"
+const UsuarioSchema = new mongoose.Schema({
     nome: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
-    tipos_de_usuarios: {
+    tipo_de_usuario: {
         type: String,
-        required: true
+        required: true,
     },
     senha: {
         type: String,
-        required: true},
-    confirmsenha: {
-        type: String,
-        required: true
-    }
+        required: true,
+        hiddenSelection: false
+
+    },
+    // confirmsenha: {
+    //     type: String,
+    //     required: true,
+    //     select: false
+    // }
     
 })
+// baixar o bcrypt: npm i bcrypt
+UsuarioSchema.pre("save", async function(next) {
+    this.senha = await bcrypt.hash(this.senha, 10)
+    // this.confirmsenha = await bcrypt.hash(this.confirmsenha, 10)
+    next()
+})
+const Usuario = mongoose.model("Usuario", UsuarioSchema) 
 
-const user = mongoose.model("Usuario", usuarioSchema) 
-
-export default user
+export default Usuario
