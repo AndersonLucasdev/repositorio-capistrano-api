@@ -2,7 +2,7 @@ import mongoose from "mongoose"
 
 
 const connectDatabase = () => {
-    mongoose.connect("mongodb+srv://leiaadm:abcd1234@cluster0.15xdhdu.mongodb.net/test", {
+    mongoose.connect(process.env.MONGO_URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true 
     }).then(() => console.log("MongoDB Atlas connected")).catch((error) => console.log(error))
