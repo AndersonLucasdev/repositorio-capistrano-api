@@ -1,34 +1,48 @@
 import obrasService from '../services/obras.services.js'
 
+// ------- INICIO CADASTRO OBRAS ----------
 const cadastro_obras = async (req, res) => {
+
+    // Campos necessários para o cadastro da obra no banco de dados
     const {
         titulo, descricao, resumo, autores
     } = req.body
 
+    //Checando se há campos vázios
     if (!titulo || !autores || !descricao || !resumo) {
         res.status(400).json({message: "Há um campo vazio"})
+
     } else {
-        const Obras = await obrasService.create(req.body)
 
-        if (!Obras) {
-            res.status(400).json({message: "Erro na criação das obras"})
-        }
+        try{
+            //Cadastrando a obra no banco de dados
+            const Obras = await obrasService.create(req.body)
 
-            res.status(201).json(
-                {
-                    user: {
-                        id: Obras._id,
-                        titulo,
-                        descricao,
-                        resumo, 
-                        autores
-                    },
-                    message: "Obra cadastrada com sucesso"
-                }
-            )
+            if (!Obras) {
+                res.status(400).json({message: "Erro na criação das obras"})
+            }
+                //Obra cadastrada no banco de dados
+                res.status(201).json(
+                    {
+                        user: {
+                            id: Obras._id,
+                            titulo,
+                            descricao,
+                            resumo, 
+                            autores
+                        },
+                        message: "Obra cadastrada com sucesso"
+                    }
+                )
+            }
+
+        catch(err){
+            return res.status(500).json({Message:"Erro ao cadastrar obra"})
         }
+    
+        
     }
-
+}
 const findAll = async (req, res) => {
     try {
         const obras = await obrasService.findAllService()

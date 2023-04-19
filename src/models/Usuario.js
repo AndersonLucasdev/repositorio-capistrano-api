@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt"
 const UsuarioSchema = new mongoose.Schema({
-    nome: {
+    usuario: {
         type: String,
         required: true,
         unique: true
@@ -12,15 +12,9 @@ const UsuarioSchema = new mongoose.Schema({
     },
     senha: {
         type: String,
-        required: true,
-        hiddenSelection: false
+        required: true
 
     },
-    // confirmsenha: {
-    //     type: String,
-    //     required: true,
-    //     select: false
-    // }
     
 })
 // baixar o bcrypt: npm i bcrypt
