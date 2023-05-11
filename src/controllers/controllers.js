@@ -10,7 +10,7 @@ const cadastro_obras = async (req, res) => {
 
     //Checando se há campos vázios
     if (!titulo || !autores || !descricao || !resumo) {
-        res.status(400).json({message: "Há um campo vazio"})
+        res.status(200).json({message: "Há um campo vazio", status:400})
 
     } else {
 
@@ -19,7 +19,7 @@ const cadastro_obras = async (req, res) => {
             const Obras = await obrasService.create(req.body)
 
             if (!Obras) {
-                res.status(400).json({message: "Erro na criação das obras"})
+                res.status(200).json({message: "Erro na criação das obras", status:400})
             }
                 //Obra cadastrada no banco de dados
                 res.status(201).json(
@@ -77,7 +77,7 @@ const update = async (req, res) => {
         const {titulo, resumo, descricao, autores} = req.body
 
         if (!titulo && !resumo && !descricao && !autores) {
-            return res.status(400).json({message: 'Altere pelo menos um campo'})
+            return res.status(200).json({message: 'Altere pelo menos um campo', status:400})
         }
 
         const {id} = req
@@ -96,7 +96,7 @@ const remove = async (req, res) => {
         const {id} = req
 
         if (!id) {
-            return res.status(400).json({message: 'Id não informado'})
+            return res.status(200).json({message: 'Id não informado', status:400})
         }
 
         const deletado = await obrasService.deleteByID(id)
