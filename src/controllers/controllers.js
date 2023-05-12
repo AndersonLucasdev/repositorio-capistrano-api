@@ -13,10 +13,10 @@ const cadastro_obras = async (req, res) => {
         res.status(200).json({message: "Há um campo vazio", status:400})
 
     } else {
-
         try{
             //Cadastrando a obra no banco de dados
-            const Obras = await obrasService.create(req.body)
+
+            const Obras = await obrasService.create(titulo.trim(), descricao, resumo, autores)
 
             if (!Obras) {
                 res.status(200).json({message: "Erro na criação das obras", status:400})
@@ -26,7 +26,7 @@ const cadastro_obras = async (req, res) => {
                     {
                         user: {
                             id: Obras._id,
-                            titulo,
+                            titulo:titulo.trim(),
                             descricao,
                             resumo, 
                             autores
@@ -109,11 +109,30 @@ const remove = async (req, res) => {
     }
 }
 
+const pesquisar_obra = async(req,res) =>{
+    try{
+        const {titulo} = req.body
+
+        if (!titulo) {
+            return res.status(200).json({message: "Titulo não informado", status: 400})
+        }
+
+        const pesquisa = await obrasService.findBynameService(titulo.trim())
+        if (!pesquisa){
+            res.status(200).json({message: "Obra(s) não encontrada"})
+        }
+        res.status(200).json({message: "Obra(s) encontrada com sucesso.",pesquisa})
+    } catch(erro){
+        res.status(500).json({message: erro.message})
+    }
+}
+
 
 export {
     cadastro_obras,
     findAll,
     findById,
     update,
-    remove
+    remove,
+    pesquisar_obra
 }

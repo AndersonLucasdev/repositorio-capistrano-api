@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {cadastro_obras, findAll, findById, remove, update} from '../controllers/controllers.js'
+import {cadastro_obras, findAll, findById, pesquisar_obra, remove, update} from '../controllers/controllers.js'
 import {cadastro_usuario, login, validarToken, deletarToken} from '../controllers/User.controllers.js'
 import {validID, validObras} from '../middlewares/global.middlewares.js'
 
@@ -10,6 +10,7 @@ route.get("/obras", findAll)
 route.get("/:id", validID, validObras, findById)
 route.patch("/:id", validID, validObras, update)
 route.delete("/:id", validID, validObras, remove)
+route.post("/pesquisar_obra", pesquisar_obra)
 route.post("/cadastro_usuario", cadastro_usuario)
 
 route.post("/login", login)
