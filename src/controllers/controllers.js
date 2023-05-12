@@ -16,7 +16,7 @@ const cadastro_obras = async (req, res) => {
         try{
             //Cadastrando a obra no banco de dados
 
-            const Obras = await obrasService.create(titulo.trim(), descricao, resumo, autores)
+            const Obras = await obrasService.create(titulo.trim(), autores, descricao, resumo)
 
             if (!Obras) {
                 res.status(200).json({message: "Erro na criação das obras", status:400})
