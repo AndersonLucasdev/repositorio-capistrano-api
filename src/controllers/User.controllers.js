@@ -98,9 +98,26 @@ const deletarToken = async (req, res) =>{
 
 }
 
+const pesquisarUsuarioPeloNome = async (req,res) =>{
+    const {usuario} = req.body
+
+    if(!usuario){
+        return res.status(200).json({mensagem:"Há campos vázios", status:400})
+    }
+
+    const verificarUsuario = await usuarioService.findbyName(usuario)
+
+    if(!verificarUsuario){
+        return res.status(200).json({mensagem:"Usuário não encontrado", status:400})
+    }
+
+    res.status(200).json({mensagem:"Usuário encontrado", verificarUsuario})
+}
+
 export {
     cadastro_usuario,
     login,
     validarToken,
-    deletarToken
+    deletarToken,
+    pesquisarUsuarioPeloNome
 }

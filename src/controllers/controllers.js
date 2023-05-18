@@ -117,10 +117,11 @@ const pesquisar_obra = async(req,res) =>{
             return res.status(200).json({message: "Titulo não informado", status: 400})
         }
 
-        const pesquisa = await obrasService.findBynameService(titulo.trim())
+        const pesquisa = await obrasService.findBynameService(titulo)
         if (!pesquisa){
             res.status(200).json({message: "Obra(s) não encontrada"})
         }
+        
         res.status(200).json({message: "Obra(s) encontrada com sucesso.",pesquisa})
     } catch(erro){
         res.status(500).json({message: erro.message})
