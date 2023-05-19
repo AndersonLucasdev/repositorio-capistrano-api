@@ -5,13 +5,13 @@ const validID = async(req, res, next)  => {
     try {
         const id = req.params.id
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            res.status(400).json({message: "Id invalido"})
+            res.status(400).json({Message: "Id invalido"})
         }
 
         next()
     }
     catch (error){
-        res.status(500).json({message: error.message})
+        res.status(500).json({Message: error.Message})
     }
 }
 
@@ -22,7 +22,7 @@ const validObras = async (req, res, next) => {
         const obra = await obrasServices.findByIdService(id)
 
         if (!obra) {
-            return res.status(400).json({message: "Obra não encontrada"})
+            return res.status(400).json({Message: "Obra não encontrada"})
         }
 
         req.id = id
@@ -31,7 +31,7 @@ const validObras = async (req, res, next) => {
         next()
     }
     catch (error){
-        res.status(500).json({message: error.message})
+        res.status(500).json({Message: error.Message})
     }
 }
 

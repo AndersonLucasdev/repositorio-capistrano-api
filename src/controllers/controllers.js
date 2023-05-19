@@ -10,7 +10,7 @@ const cadastro_obras = async (req, res) => {
 
     //Checando se há campos vázios
     if (!titulo || !autores || !descricao || !resumo) {
-        res.status(200).json({message: "Há um campo vazio", status:400})
+        res.status(200).json({Message: "Há um campo vazio", status:400})
 
     } else {
         try{
@@ -19,7 +19,7 @@ const cadastro_obras = async (req, res) => {
             const Obras = await obrasService.create(titulo.trim(), autores, descricao, resumo)
 
             if (!Obras) {
-                res.status(200).json({message: "Erro na criação das obras", status:400})
+                res.status(200).json({Message: "Erro na criação das obras", status:400})
             }
                 //Obra cadastrada no banco de dados
                 res.status(201).json(
@@ -31,7 +31,7 @@ const cadastro_obras = async (req, res) => {
                             resumo, 
                             autores
                         },
-                        message: "Obra cadastrada com sucesso"
+                        Message: "Obra cadastrada com sucesso"
                     }
                 )
             }
@@ -48,14 +48,14 @@ const findAll = async (req, res) => {
         const obras = await obrasService.findAllService()
 
         if (obras.length === 0) {
-            return res.status(200).json({message: 'Não há obras cadastradas'})
+            return res.status(200).json({Message: 'Não há obras cadastradas'})
         }
 
         res.status(200).json(obras)
     }
 
     catch (error) {
-        res.status(500).json({message: error.message})
+        res.status(500).json({Message: error.Message})
 
     }
 } 
@@ -68,7 +68,7 @@ const findById = async (req, res) => {
     }
 
     catch (erro){
-        return res.status(500).json({message: erro.message})
+        return res.status(500).json({Message: erro.Message})
     }
 }
 
@@ -77,17 +77,17 @@ const update = async (req, res) => {
         const {titulo, resumo, descricao, autores} = req.body
 
         if (!titulo && !resumo && !descricao && !autores) {
-            return res.status(200).json({message: 'Altere pelo menos um campo', status:400})
+            return res.status(200).json({Message: 'Altere pelo menos um campo', status:400})
         }
 
         const {id} = req
         const atualizado = await obrasService.updateService(id, titulo, autores, descricao, resumo)
         console.log(atualizado)
-        res.status(200).json({message: 'Obra atualizada', atualizado})
+        res.status(200).json({Message: 'Obra atualizada', atualizado})
     }
 
     catch (error){
-        res.status(500).json({message: error.message})
+        res.status(500).json({Message: error.Message})
     }
 }
 
@@ -96,16 +96,16 @@ const remove = async (req, res) => {
         const {id} = req
 
         if (!id) {
-            return res.status(200).json({message: 'Id não informado', status:400})
+            return res.status(200).json({Message: 'Id não informado', status:400})
         }
 
         const deletado = await obrasService.deleteByID(id)
 
-        res.status(200).json({message: "Obra excluida com sucesso", deletado})
+        res.status(200).json({Message: "Obra excluida com sucesso", deletado})
     }
 
     catch (erro){
-        res.status(500).json({message: erro.message})
+        res.status(500).json({Message: erro.Message})
     }
 }
 
@@ -114,17 +114,17 @@ const pesquisar_obra = async(req,res) =>{
         const {titulo} = req.body
 
         if (!titulo) {
-            return res.status(200).json({message: "Titulo não informado", status: 400})
+            return res.status(200).json({Message: "Titulo não informado", status: 400})
         }
 
         const pesquisa = await obrasService.findBynameService(titulo)
         if (!pesquisa){
-            res.status(200).json({message: "Obra(s) não encontrada"})
+            res.status(200).json({Message: "Obra(s) não encontrada"})
         }
         
-        res.status(200).json({message: "Obra(s) encontrada com sucesso.",pesquisa})
+        res.status(200).json({Message: "Obra(s) encontrada com sucesso.",pesquisa})
     } catch(erro){
-        res.status(500).json({message: erro.message})
+        res.status(500).json({Message: erro.Message})
     }
 }
 

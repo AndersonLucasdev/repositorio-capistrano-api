@@ -10,10 +10,10 @@ const cadastro_usuario = async (req, res) => {
     } = req.body
     
     if (!usuario || !tipo_de_usuario || !senha || ! confirmsenha) {
-        res.status(200).json({message: "Há campo(s) vazio.", status:400})
+        res.status(200).json({Message: "Há campo(s) vazio.", status:400})
     } else {
         if (senha != confirmsenha || senha.length <= 6) {
-            res.status(200).json({message: "A senha está incorreta.", status:400})
+            res.status(200).json({Message: "A senha está incorreta.", status:400})
         } else {
             const Usuario = await usuarioService.create(req.body)
 
@@ -27,14 +27,14 @@ const cadastro_usuario = async (req, res) => {
                         usuario,
                         tipo_de_usuario
                     },
-                    message: "Usuario cadastrada com sucesso."
+                    Message: "Usuario cadastrada com sucesso."
                 }
                 )
             }
     }
 }
     } catch (err) {
-        res.status(500).send({message: err.message})
+        res.status(500).send({Message: err.Message})
     }
 }
 
@@ -49,12 +49,12 @@ const login = async (req, res) =>  {
     const verificado = await usuarioService.findbyName(usuario) // objeto
 
     if (!verificado) {
-        res.status(200).json({message: 'Usuario ou senha incorretos', status:400})
+        res.status(200).json({Message: 'Usuario ou senha incorretos', status:400})
     }
     const senhaValida = bcrypt.compareSync(senha, verificado.senha)
 
     if (!senhaValida) {
-        res.status(200).json({message: 'Usuario ou senha incorretos', status:400})
+        res.status(200).json({Message: 'Usuario ou senha incorretos', status:400})
     }
 
     const token = usuarioService.generateToken(usuario) 
@@ -89,7 +89,7 @@ const deletarToken = async (req, res) =>{
     const token = req.body.token || req.query.token || req.cookies.token || req.headers['x-access-token'];
 
     if(!token){
-       return res.status(200).json({message:"Logout não autorizado", status:400})
+       return res.status(200).json({Message:"Logout não autorizado", status:400})
     }
 
     res.cookie('token', null, {httpOnly:true})
@@ -102,16 +102,16 @@ const pesquisarUsuarioPeloNome = async (req,res) =>{
     const {usuario} = req.body
 
     if(!usuario){
-        return res.status(200).json({mensagem:"Há campos vázios", status:400})
+        return res.status(200).json({Message:"Há campos vázios", status:400})
     }
 
     const verificarUsuario = await usuarioService.findbyName(usuario)
 
     if(!verificarUsuario){
-        return res.status(200).json({mensagem:"Usuário não encontrado", status:400})
+        return res.status(200).json({Message:"Usuário não encontrado", status:400})
     }
 
-    res.status(200).json({mensagem:"Usuário encontrado", verificarUsuario})
+    res.status(200).json({Message:"Usuário encontrado", verificarUsuario})
 }
 
 export {
