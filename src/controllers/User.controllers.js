@@ -2,10 +2,10 @@ import usuarioService from '../services/user.services.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
-
-
 const cadastro_usuario = async (req, res) => {
-    try{ const{
+    
+    try{ 
+        const{
         usuario, tipo_de_usuario, senha, confirmsenha
     } = req.body
     
@@ -15,20 +15,21 @@ const cadastro_usuario = async (req, res) => {
         if (senha != confirmsenha || senha.length <= 6) {
             res.status(200).json({Message: "A senha está incorreta.", status:400})
         } else {
+
             const Usuario = await usuarioService.create(req.body)
 
             if (!Usuario) {
                 res.status(200).send({messsage: "Erro na criação do usuario.", status:400})
             } else {
                 res.status(201).json(
-                {
-                    user: {
-                        id: usuarioService._id,
-                        usuario,
-                        tipo_de_usuario
-                    },
-                    Message: "Usuario cadastrada com sucesso."
-                }
+                    {
+                        user: {
+                            id: Usuario._id,
+                            usuario,
+                            tipo_de_usuario
+                        },
+                        Message: "Usuario cadastrada com sucesso."
+                    }
                 )
             }
     }
@@ -98,20 +99,69 @@ const deletarToken = async (req, res) =>{
 
 }
 
+const findAllUsuarios = async (req, res) => {
+    try {
+        const usuario = await usuarioService.findAllusuarioService()
+
+        if (usuario.length === 0) {
+            return res.status(200).json({Message: 'Não há usuarios cadastrados'})
+        }   else {
+            res.status(200).json(usuario)
+        }
+    }  catch (error) {
+        res.status(500).json({Message: error.Message})
+    }
+} 
+
+const findByIdUsuario = async (req, res) => {
+    try {
+        const usuario = req.usuario
+
+        res.status(200).json(usuario)
+    }
+
+    catch (erro){
+        return res.status(500).json({Message: erro.Message})
+    }
+}
+
+
 const pesquisarUsuarioPeloNome = async (req,res) =>{
-    const {usuario} = req.body
+    try {
+        const {usuario} = req.body
 
-    if(!usuario){
-        return res.status(200).json({Message:"Há campos vázios", status:400})
+        if(!usuario){
+            return res.status(200).json({Message:"Há campos vázios", status:400})
+        }
+
+        const verificarUsuario = await usuarioService.findbyName(usuario)
+
+        if(!verificarUsuario){
+            return res.status(200).json({Message:"Usuário não encontrado", status:400})
+        }
+
+        res.status(200).json({Message:"Usuário encontrado", verificarUsuario})
+    } catch(erro){
+        res.status(500).json({Message: erro.Message})
+    }
+}
+
+const removeUsuarioID = async (req, res) => {
+    try {
+
+        const {id} = req
+        if (!id) {
+            return res.status(200).json({Message: 'Id não informado', status:400})
+        }
+
+        const deletado = await usuarioService.deleteByIDService(id)
+
+        return res.status(200).json({Message: "Usuário excluido com sucesso", deletado})
     }
 
-    const verificarUsuario = await usuarioService.findbyName(usuario)
-
-    if(!verificarUsuario){
-        return res.status(200).json({Message:"Usuário não encontrado", status:400})
+    catch (erro){
+        res.status(500).json({Message: erro.Message})
     }
-
-    res.status(200).json({Message:"Usuário encontrado", verificarUsuario})
 }
 
 export {
@@ -119,5 +169,8 @@ export {
     login,
     validarToken,
     deletarToken,
-    pesquisarUsuarioPeloNome
+    pesquisarUsuarioPeloNome,
+    removeUsuarioID,
+    findAllUsuarios,
+    findByIdUsuario
 }

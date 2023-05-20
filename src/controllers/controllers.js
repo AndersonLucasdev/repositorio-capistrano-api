@@ -94,14 +94,14 @@ const update = async (req, res) => {
 const remove = async (req, res) => {
     try {
         const {id} = req
-
+        console.log(id)
         if (!id) {
             return res.status(200).json({Message: 'Id não informado', status:400})
         }
 
-        const deletado = await obrasService.deleteByID(id)
+        const excluido = await obrasService.deleteByID(id)
 
-        res.status(200).json({Message: "Obra excluida com sucesso", deletado})
+        res.status(200).json({Message: "Obra excluida com sucesso", excluido})
     }
 
     catch (erro){

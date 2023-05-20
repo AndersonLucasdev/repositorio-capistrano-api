@@ -25,6 +25,7 @@ const updateService = (
     )
 
 const deleteByID = (id) => Obras.findByIdAndDelete(id)
+
 const findBynameService = (titulo) => Obras.find({titulo})
 
 export default {
