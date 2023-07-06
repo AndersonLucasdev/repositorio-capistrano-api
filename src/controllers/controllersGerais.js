@@ -20,3 +20,7 @@ function primeiraLetraMaiuscula(texto) {
     
     return String(comPonto);
   }
+
+  export {
+    primeiraLetraMaiuscula, capitalizarEPontuar
+  }
