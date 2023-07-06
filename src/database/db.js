@@ -50,14 +50,6 @@ const createTables = async () => {
       );
 
 
-
--- Criação da tabela "usuario_obra"
-CREATE TABLE IF NOT EXISTS usuario_obra (
-  id_obra SERIAL REFERENCES obra(id_obra),
-  id_usuario SERIAL REFERENCES usuario(id_usuario)
-);
-
-
       `);
       client.release();
       console.log('Tabelas e campos criados com sucesso!');
