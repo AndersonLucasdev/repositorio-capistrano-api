@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {cadastro_obras, findAll, findById, pesquisar_obra, remove, update} from '../controllers/controllers.js'
 import {cadastro_usuario, login, validarToken, deletarToken, findAllUsuarios, removeUsuarioID, findByIdUsuario, pesquisarUsuarioPeloNome} from '../controllers/User.controllers.js'
-import {validID, validObras, validUser} from '../middlewares/global.middlewares.js'
+
 
 const route = Router()
 

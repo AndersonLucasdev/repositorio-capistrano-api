@@ -1,8 +1,8 @@
-import usuarioService from '../services/user.services.js'
+
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
-// oiie
+
 const cadastro_usuario = async (req, res) => {
     
     try{ 
