@@ -1,9 +1,3 @@
-
-
-
-
-
-
 // funções gerais
 function primeiraLetraMaiuscula(texto) {
     return String(texto)

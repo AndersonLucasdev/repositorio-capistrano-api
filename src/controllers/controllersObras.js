@@ -1,5 +1,5 @@
-import pool from "../database/db"
-import { primeiraLetraMaiuscula, capitalizarEPontuar } from "./controllersGerais"
+import pool from "../database/db.js"
+import { primeiraLetraMaiuscula, capitalizarEPontuar } from "./controllersGerais.js"
 
 
 // funções para mostrar (get)
@@ -181,10 +181,7 @@ const MostrarTodasObrasOutrosAutores = async (req, res) => {
     }
 }
 
-
-
 // funções para cadastro (post)
-
 const CadastrarObra = async (req, res) => {
   const {
     titulo, descricao, resumo, link, id_usuario, autor
@@ -248,9 +245,7 @@ const CadastrarObra = async (req, res) => {
   }
 }
 
-
-// funções para excluir (path)
-
+// funções para excluir (delete)
 const ExcluirObra = async (req, res) => {
   try {
     const {obra_id} = req
@@ -267,10 +262,16 @@ const ExcluirObra = async (req, res) => {
     
 
 
-    return res.status(200).json({Mensagem: "Pokemon excluida com sucesso."})
+    return res.status(200).json({Mensagem: "Obra excluida com sucesso."})
   } catch (error) {
     return res.status(500).json({ mensagem: 'Ocorreu um erro interno no servidor' });
   }
 
 }
 
+
+export {
+  MostrarObraPeloID, MostrarPeloNomeAutor, MostrarPeloNomeObra, 
+  MostrarPeloNomeUsuario, MostrarTodasObras, MostrarTodasObrasCapistrano,
+  MostrarTodasObrasOutrosAutores, CadastrarObra, ExcluirObra
+}

@@ -29,7 +29,7 @@ const createTables = async () => {
         CREATE TABLE IF NOT EXISTS usuario (
           id_usuario SERIAL PRIMARY KEY,
           nome VARCHAR(255),
-          img_usuario VARCHAR(255)
+          senha VARCHAR(255)
         );
 
 

@@ -1,28 +1,51 @@
 import { Router } from "express";
-import {cadastro_obras, findAll, findById, pesquisar_obra, remove, update} from '../controllers/controllers.js'
-import {cadastro_usuario, login, validarToken, deletarToken, findAllUsuarios, removeUsuarioID, findByIdUsuario, pesquisarUsuarioPeloNome} from '../controllers/User.controllers.js'
+import { MostrarObraPeloID, MostrarPeloNomeAutor, MostrarPeloNomeObra, 
+    MostrarPeloNomeUsuario, MostrarTodasObras, MostrarTodasObrasCapistrano,
+    MostrarTodasObrasOutrosAutores, CadastrarObra, ExcluirObra } from "../controllers/controllersObras.js";
 
+import { MostrarTodosUsuarios, EncontrarUsuarioId, CadastrarUsuario, Login, removeUsuarioID } from "../controllers/controllersUsuarios.js";
+
+import {validarToken, deletarToken} from '../controllers/controllersToken.js'
 
 const route = Router()
 
 // Obras
-route.post("/cadastro_obras", cadastro_obras)
-route.get("/obras", findAll)
-route.get("/pegar_obraid/:id", validID, validObras, findById)
-route.patch("/:id", validID, validObras, update)
-route.delete("/excluir_obras/:id", validID, validObras, remove)
-route.post("/pesquisar_obra", pesquisar_obra)
+// mostrar
+route.get("/mostrar_todas_obras", MostrarTodasObras)
+route.get("/mostrar_todas_capistrano", MostrarTodasObrasCapistrano)
+route.get("/mostrar_outras_obras", MostrarTodasObrasOutrosAutores)
+route.get("/mostrar_obraid/:id", MostrarObraPeloID)
+route.post("/pesquisar_nome_obra", MostrarPeloNomeObra)
+route.post("/pesquisar_nome_autor", MostrarPeloNomeAutor)
+route.post("/pesquisar_nome_usuario", MostrarPeloNomeUsuario)
+
+// cadastrar
+route.post("/cadastro_obras", CadastrarObra)
+
+// editar
+
+
+// excluir
+route.delete("/excluir_obra/:id", ExcluirObra)
+
 
 // Usuários
-route.post("/cadastro_usuario", cadastro_usuario)
-route.post("/login", login)
-route.get("/mostrar_usuarios", findAllUsuarios)
-route.post("/pesquisar_usuario_nome", pesquisarUsuarioPeloNome)
-route.post("/validarToken", validarToken)
-route.post("/deletarToken", deletarToken)
-route.delete("/excluir_usuario/:id", validID, validUser, removeUsuarioID)
+//mostrar
+route.get("/mostrar_todos_usuarios", MostrarTodosUsuarios)
+route.get("/mostrar_usuarioid/:id", EncontrarUsuarioId)
 
-route.get("/pegar_usuarioid/:id", validID, validUser, findByIdUsuario)
+// cadastrar/logar
+route.post("/cadastro_usuarios", CadastrarUsuario)
+route.post("/login", Login)
+
+// excluir
+route.delete("excluir_usuario", removeUsuarioID)
+
+
+// token
+// validar
+route.post("validar_token", validarToken)
+route.post("deletar_token", deletarToken)
 
 
 export default route

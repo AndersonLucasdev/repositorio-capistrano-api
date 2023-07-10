@@ -1,6 +1,5 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-import connectDatabase from './src/database/db.js'
 import Route from "./src/routes/routes.js"
 import dotenv from "dotenv"
 import cookieParser from 'cookie-parser'
@@ -20,7 +19,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 })); 
 app.use(cors())
-connectDatabase()
+
 
 app.use(cookieParser())
 app.use(express.json())

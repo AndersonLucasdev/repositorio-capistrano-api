@@ -35,6 +35,7 @@
     "mongose": "^0.0.2-security",
     "moongose": "^1.0.0",
     "nodemon": "^2.0.22",
+    "pg": "^8.11.1",
     "vercel": "^29.3.6"
   }
 }
