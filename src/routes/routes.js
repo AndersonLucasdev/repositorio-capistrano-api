@@ -28,7 +28,6 @@ route.post("/cadastro_obras", CadastrarObra)
 // excluir
 route.delete("/excluir_obra/:id", ExcluirObra)
 
-
 // Usuários
 //mostrar
 route.get("/mostrar_todos_usuarios", MostrarTodosUsuarios)
