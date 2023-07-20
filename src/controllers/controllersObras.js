@@ -5,18 +5,16 @@ import { primeiraLetraMaiuscula, capitalizarEPontuar } from "./controllersGerais
 // funções para mostrar (get)
 const MostrarTodasobra = async (req, res) => {
     try {
-        const obra = await pool.query(` SELECT 
-        o.id_obra, o.titulo, o.resumo, au.nome as usuario, string_agg(DISTINCT au.nome, ', ') as autores
+        const obra = await pool.query(`
+        SELECT 
+          o.id_obra, o.titulo, o.resumo, u.nome as usuario, string_agg(DISTINCT au.nome, ', ') as autores
         FROM obra o
-        inner join obra_autores oa on o.id_obra = oa.id_obra
-        inner join autor au on au.id_autor = oa.id_autor
-        inner join usuario u on u.id_usuario = o.id_usuario
-        where o.id_obra = 1
-        
-        group by o.id_obra, au.nome, o.titulo, o.resumo
-        
-        order by o.id_obra
-      `)
+        INNER JOIN obra_autores oa ON o.id_obra = oa.id_obra
+        INNER JOIN autor au ON au.id_autor = oa.id_autor
+        INNER JOIN usuario u ON u.id_usuario = o.id_usuario
+        GROUP BY o.id_obra, u.nome, o.titulo, o.resumo
+        ORDER BY o.id_obra
+      `);
         
         if (obra.length === 0) {
             res.status(200).json({Mensagem: "Não há obra cadastrados.", status:400})
@@ -31,7 +29,7 @@ const MostrarTodasobra = async (req, res) => {
 
 const MostrarObraPeloID = async (req, res) => {
     try {
-        const Obra = await pool.query(`SELECT
+        const Obra = await pool.query(`
         SELECT o.titulo, o.resumo, au.nome as usuario, string_agg(DISTINCT au.nome, ', ') as autores, o.descricao, o.link
         FROM obra o
         inner join obra_autores oa on o.id_obra = oa.id_obra
@@ -214,13 +212,8 @@ const CadastrarObra = async (req, res) => {
       lista_autores_id.push(verificaAutor.rows[0].id_autor);
     }
 
-    // Inicia uma transação
-    const client = await pool.connect();
-    try {
-      await client.query('BEGIN');
-
       // Insere a obra
-      const CadastroObra = await client.query(
+      const CadastroObra = await pool.query(
         `INSERT INTO obra (
           id_usuario,
           titulo,
@@ -241,24 +234,15 @@ const CadastrarObra = async (req, res) => {
 
       // Relaciona na tabela autor
       for (const autor_id of lista_autores_id) {
-        await client.query(
+        await pool.query(
           'INSERT INTO obra_autores (id_obra, id_autor) VALUES ($1, $2)',
           [id_obra, autor_id]
         );
       }
 
-      // Finaliza a transação
-      await client.query('COMMIT');
 
       return res.status(200).json({ Mensagem: 'Obra cadastrada com sucesso.' });
-    } catch (error) {
-      // Desfaz a transação em caso de erro
-      await client.query('ROLLBACK');
-      throw error;
-    } finally {
-      // Libera o cliente
-      client.release();
-    }
+    
   } catch (error) {
     return res.status(500).json({ Mensagem: 'Ocorreu um erro interno no servidor.' });
   }
@@ -293,99 +277,75 @@ const EditarObra = async (req, res) => {
     const { id_obra } = req.params;
     const { titulo, link, usuario, resumo, descricao } = req.body;
 
-    if (!titulo && !link && !resumo && !descricao) {
-      return res.status(200).json({ Mensagem: 'Altere pelo menos um campo.', status: 400 });
+    if (!titulo && !link && !usuario && !resumo && !descricao) {
+      return res.status(400).json({ Mensagem: 'Altere pelo menos um campo.', status: 400 });
     }
 
-    const TituloFormatado = primeiraLetraMaiuscula(titulo)
-    const linkFormatado = link.trim()
-    const resumoFormatado = capitalizarEPontuar(resumo)
-    const descricaoFormatada = primeiraLetraMaiuscula(descricaoFormatada)
+    const TituloFormatado = primeiraLetraMaiuscula(titulo);
+    const linkFormatado = link.trim();
+    const resumoFormatado = capitalizarEPontuar(resumo);
+    const descricaoFormatada = primeiraLetraMaiuscula(descricao);
+    const usuarioFormatado = primeiraLetraMaiuscula(usuario)
 
     let usuario_id;
     const list_usuario_id = [];
 
     for (let i = 0; i < usuario.length; i++) {
       const usuario_nome = usuario[i];
-      const usuarioFormatada = primeiraLetraMaiuscula(usuario_nome);
+      const usuarioFormatado = primeiraLetraMaiuscula(usuario_nome);
       const verificaUsuario = await pool.query(
         'SELECT id_usuario FROM usuario WHERE nome = $1',
-        [usuarioFormatada]
+        [usuarioFormatado]
       );
       usuario_id = verificaUsuario.rows[0].id_usuario;
-    list_usuario_id.push(usuario_id);
-    }
-
-
-    if (TituloFormatado) {
-      await client.query(
-        'UPDATE obra SET titulo = $1 where id_obra = $2',
-        [
-          TituloFormatado,
-          id_obra
-        ]
-      );
-    }
-
-    if (linkFormatado) {
-      await client.query(
-        'UPDATE obra SET linke = $1 where id_obra = $2',
-        [
-          linkFormatado,
-          id_obra
-        ]
-      );
-    }
-
-    if (resumoFormatado) {
-      await client.query(
-        'UPDATE obra SET resumo = $1 where id_obra = $2',
-        [
-          resumoFormatado,
-          id_obra
-        ]
-      );
-    }
-
-    if (descricaoFormatada) {
-      await client.query(
-        'UPDATE obra SET descricao = $1 where id_obra = $2',
-        [
-          descricaoFormatada,
-          id_obra
-        ]
-      );
+      list_usuario_id.push(usuario_id);
     }
 
     if (TituloFormatado) {
       await pool.query(
         'UPDATE obra SET titulo = $1 where id_obra = $2',
-        [
-          TituloFormatado,
-          id_obra
-        ]
+        [TituloFormatado, id_obra]
       );
     }
 
-    if (list_usuario_id.length > 0) {
-      const IdUsuarios = await pool.query(`Select usuario_id from obra where id_obra = $1`, [
-        id_obra
-      ])
-
-      
+    if (linkFormatado) {
+      await pool.query(
+        'UPDATE obra SET link = $1 where id_obra = $2',
+        [linkFormatado, id_obra]
+      );
     }
 
-        // Atualiza o usuario_id na tabela obra
-        await pool.query('UPDATE obra SET id_usuario = $1 WHERE id_obra = $2', [
-          usuario_id,
-          id_obra
-        ]);
-      
+    if (resumoFormatado) {
+      await pool.query(
+        'UPDATE obra SET resumo = $1 where id_obra = $2',
+        [resumoFormatado, id_obra]
+      );
+    }
+
+    if (descricaoFormatada) {
+      await pool.query(
+        'UPDATE obra SET descricao = $1 where id_obra = $2',
+        [descricaoFormatada, id_obra]
+      );
+    }
+
+    if (usuario) {
+      const IdUsuarios = await pool.query('Select usuario_id from obra where id_obra = $1', [
+        id_obra
+      ]);
+    }
+
+    // Atualiza o usuario_id na tabela obra
+    await pool.query('UPDATE obra SET id_usuario = $1 WHERE id_obra = $2', [
+      usuario_id,
+      id_obra
+    ]);
+
     return res.status(200).json({ Mensagem: 'Obra atualizada com sucesso.' });
   } catch (erro) {
     return res.status(500).json({ Mensagem: 'Ocorreu um erro interno no servidor.' });
-  }  
-}
+  }
+};
 
 
 export {

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { MostrarObraPeloID, MostrarPeloNomeAutor, MostrarPeloNomeObra, 
-    MostrarPeloNomeUsuario, MostrarTodasObras, MostrarTodasObrasCapistrano,
-    MostrarTodasObrasOutrosAutores, CadastrarObra, ExcluirObra } from "../controllers/controllersObras.js";
+    MostrarPeloNomeUsuario, MostrarTodasobra, MostrarTodasobraCapistrano,
+    MostrarTodasobraOutrosAutores, CadastrarObra, ExcluirObra } from "../controllers/controllersObras.js";
 
 import { MostrarTodosUsuarios, EncontrarUsuarioId, CadastrarUsuario, Login, removeUsuarioID } from "../controllers/controllersUsuarios.js";
 
@@ -11,9 +11,9 @@ const route = Router()
 
 // Obras
 // mostrar
-route.get("/mostrar_todas_obras", MostrarTodasObras)
-route.get("/mostrar_todas_capistrano", MostrarTodasObrasCapistrano)
-route.get("/mostrar_outras_obras", MostrarTodasObrasOutrosAutores)
+route.get("/mostrar_todas_obras", MostrarTodasobra)
+route.get("/mostrar_todas_capistrano", MostrarTodasobraCapistrano)
+route.get("/mostrar_outras_obras", MostrarTodasobraOutrosAutores)
 route.get("/mostrar_obraid/:id", MostrarObraPeloID)
 route.post("/pesquisar_nome_obra", MostrarPeloNomeObra)
 route.post("/pesquisar_nome_autor", MostrarPeloNomeAutor)
@@ -38,7 +38,7 @@ route.post("/cadastro_usuarios", CadastrarUsuario)
 route.post("/login", Login)
 
 // excluir
-route.delete("excluir_usuario", removeUsuarioID)
+route.delete("excluir_usuario/:id", removeUsuarioID)
 
 
 // token

@@ -7,19 +7,18 @@ import { primeiraLetraMaiuscula, capitalizarEPontuar } from "./controllersGerais
 
 // funções para mostrar (get)
 const MostrarTodosUsuarios = async (req, res) => {
-    try {
-        const Usuarios = await pool.query('SELECT nome FROM usuario')
-        
-        if (Usuarios.length === 0) {
-            res.status(200).json({Mensagem: "Não há usuários cadastrados.", status:400})
-        }
+  try {
+    const usuarios = await pool.query('SELECT nome FROM usuario');
 
-        res.status(200).json(Usuarios.rows)
-
-    } catch (erro) {
-        res.status(500).json({Mensagem: erro.Mensagem})
+    if (usuarios.rows.length === 0) {
+      return res.status(200).json({ mensagem: "Não há usuários cadastrados.", status: 400 });
     }
-}
+
+    res.status(200).json(usuarios.rows);
+  } catch (erro) {
+    res.status(500).json({ mensagem: erro.message });
+  }
+};
 
 const EncontrarUsuarioId = async (req, res) => {
     try {
@@ -74,8 +73,7 @@ const CadastrarUsuario = async (req, res) => {
                             res.status(201).json(
                                 {
                                     user: {
-                                        id: CadastroUsuario.user_id,
-                                        nome,
+                                        nome: CadastrarUsuario.nome,
                                     },
                                     Mensagem: "Usuario cadastrada com sucesso."
                                 }
@@ -129,12 +127,26 @@ const Login = async (req, res) => {
 // funções para excluir (path)
 const removeUsuarioID = async (req, res) => {
     try {
-        const {id} = req
+        const {id_usuario} = req
 
-        await pool.query(
-            'Delete from usuario where id_usuario = $1',
-            [id]
+        const verificaUsuarioTemObra = await pool.query(
+            'SELECT id_usuario FROM obra WHERE id_usuario = $1',
+            [id_usuario]
           );
+
+          if (verificaUsuarioTemObra.rows.length === 0) {
+            await pool.query(
+                'Delete from usuario where id_usuario = $1',
+                [id_usuario]
+              );
+      
+            res.status(200).json({Mensagem: 'Usuario excluido com sucesso.' });
+          } else {
+      
+            return res.status(200).json({Message: "O usuário tem obras!", status: 400})
+            
+          }
+        
 
         return res.status(200).json({Mensagem: "Usuário excluido com sucesso."})
     }

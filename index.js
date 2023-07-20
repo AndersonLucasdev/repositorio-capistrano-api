@@ -1,9 +1,9 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-import Route from "./src/routes/routes.js"
-import dotenv from "dotenv"
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
+import dotenv from "dotenv"
+import Route from "./src/routes/routes.js"
 
 
 dotenv.config()
@@ -14,8 +14,8 @@ const port = 3000
 
 
 
-app.use( bodyParser.json() );       // to support JSON-encoded bodies
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+app.use( bodyParser.json() );       
+app.use(bodyParser.urlencoded({     
   extended: true
 })); 
 app.use(cors())
@@ -27,4 +27,6 @@ app.use("/", Route)
 
 
 
-app.listen(port, console.log("Conectado"))
+app.listen(port, () => {
+    console.log(`Servidor rodando na porta ${port}`)
+})
