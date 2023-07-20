@@ -9,7 +9,7 @@ const MostrarTodasobra = async (req, res) => {
         SELECT 
           o.id_obra, o.titulo, o.resumo, u.nome as usuario, string_agg(DISTINCT au.nome, ', ') as autores
         FROM obra o
-        INNER JOIN obra_autores oa ON o.id_obra = oa.id_obra
+        INNER JOIN obras_autores oa ON o.id_obra = oa.id_obra
         INNER JOIN autor au ON au.id_autor = oa.id_autor
         INNER JOIN usuario u ON u.id_usuario = o.id_usuario
         GROUP BY o.id_obra, u.nome, o.titulo, o.resumo
@@ -30,12 +30,14 @@ const MostrarTodasobra = async (req, res) => {
 const MostrarObraPeloID = async (req, res) => {
     try {
         const Obra = await pool.query(`
-        SELECT o.titulo, o.resumo, au.nome as usuario, string_agg(DISTINCT au.nome, ', ') as autores, o.descricao, o.link
+        SELECT o.titulo, o.resumo, u.nome as usuario, string_agg(DISTINCT au.nome, ', ') as autores, o.descricao, o.link
         FROM obra o
-        inner join obra_autores oa on o.id_obra = oa.id_obra
+        inner join obras_autores oa on o.id_obra = oa.id_obra
         inner join autor au on au.id_autor = oa.id_autor
         inner join usuario u on u.id_usuario = o.id_usuario
-        where o.id_obra = ${req.params.id};`)
+        where o.id_obra = ${req.params.id}
+		
+		group by o.titulo, o.resumo, au.nome, o.descricao, o.link, u.nome`)
 
         res.status(200).json(Obra.rows[0])    
     }
@@ -51,14 +53,14 @@ const MostrarPeloNomeObra = async (req, res) => {
   try {
     const obra = await pool.query(`
     SELECT 
-        o.id_obra, o.titulo, o.resumo, au.nome as usuario, string_agg(DISTINCT au.nome, ', ') as autores
+        o.id_obra, o.titulo, o.resumo, u.nome as usuario, string_agg(DISTINCT au.nome, ', ') as autores
         FROM obra o
-        inner join obra_autores oa on o.id_obra = oa.id_obra
+        inner join obras_autores oa on o.id_obra = oa.id_obra
         inner join autor au on au.id_autor = oa.id_autor
         inner join usuario u on u.id_usuario = o.id_usuario
         where o.titulo ILIKE '%' || '${titulo}' || '%'
         
-        group by o.id_obra, au.nome, o.titulo, o.resumo
+        group by o.id_obra, au.nome, o.titulo, o.resumo, u.nome
         
         order by o.id_obra
     `);
@@ -79,14 +81,14 @@ const MostrarPeloNomeAutor = async (req, res) => {
   try {
     const obra = await pool.query(`
     SELECT 
-        o.id_obra, o.titulo, o.resumo, au.nome as usuario, string_agg(DISTINCT au.nome, ', ') as autores
+        o.id_obra, o.titulo, o.resumo, u.nome as usuario, string_agg(DISTINCT au.nome, ', ') as autores
         FROM obra o
-        inner join obra_autores oa on o.id_obra = oa.id_obra
+        inner join obras_autores oa on o.id_obra = oa.id_obra
         inner join autor au on au.id_autor = oa.id_autor
         inner join usuario u on u.id_usuario = o.id_usuario
         where au.nome ILIKE '%' || '${nome}' || '%'
         
-        group by o.id_obra, au.nome, o.titulo, o.resumo
+        group by o.id_obra, au.nome, o.titulo, o.resumo, u.nome
         
         order by o.id_obra
     `);
@@ -107,14 +109,14 @@ const MostrarPeloNomeUsuario = async (req, res) => {
   try {
     const obra = await pool.query(`
     SELECT 
-        o.id_obra, o.titulo, o.resumo, au.nome as usuario, string_agg(DISTINCT au.nome, ', ') as autores
+        o.id_obra, o.titulo, o.resumo, u.nome as usuario, string_agg(DISTINCT au.nome, ', ') as autores
         FROM obra o
-        inner join obra_autores oa on o.id_obra = oa.id_obra
+        inner join obras_autores oa on o.id_obra = oa.id_obra
         inner join autor au on au.id_autor = oa.id_autor
         inner join usuario u on u.id_usuario = o.id_usuario
-        where au.nome ILIKE '%' || '${nome}' || '%'
+        where u.nome ILIKE '%' || '${nome}' || '%'
         
-        group by o.id_obra, au.nome, o.titulo, o.resumo
+        group by o.id_obra, au.nome, o.titulo, o.resumo, u.nome
         
         order by o.id_obra
     `);
@@ -133,14 +135,14 @@ const MostrarTodasobraCapistrano = async (req, res) => {
     try {
         const obra = await pool.query(`
         SELECT 
-        o.id_obra, o.titulo, o.resumo, au.nome as usuario, string_agg(DISTINCT au.nome, ', ') as autores
+        o.id_obra, o.titulo, o.resumo, u.nome as usuario, string_agg(DISTINCT au.nome, ', ') as autores
         FROM obra o
-        inner join obra_autores oa on o.id_obra = oa.id_obra
+        inner join obras_autores oa on o.id_obra = oa.id_obra
         inner join autor au on au.id_autor = oa.id_autor
         inner join usuario u on u.id_usuario = o.id_usuario
-        where au.nome = 'Capistrano de abreu'
+        where au.nome = 'Capistrano de Abreu'
         
-        group by o.id_obra, au.nome, o.titulo, o.resumo
+        group by o.id_obra, au.nome, o.titulo, o.resumo, u.nome
         
         order by o.id_obra`)
 
@@ -158,14 +160,14 @@ const MostrarTodasobraOutrosAutores = async (req, res) => {
     try {
         const obra = await pool.query(`
         SELECT 
-        o.id_obra, o.titulo, o.resumo, au.nome as usuario, string_agg(DISTINCT au.nome, ', ') as autores
+        o.id_obra, o.titulo, o.resumo, u.nome as usuario, string_agg(DISTINCT au.nome, ', ') as autores
         FROM obra o
-        inner join obra_autores oa on o.id_obra = oa.id_obra
+        inner join obras_autores oa on o.id_obra = oa.id_obra
         inner join autor au on au.id_autor = oa.id_autor
         inner join usuario u on u.id_usuario = o.id_usuario
-        where au.nome != 'Capistrano de abreu'
+        where au.nome <> 'Capistrano de Abreu'
         
-        group by o.id_obra, au.nome, o.titulo, o.resumo
+        group by o.id_obra, au.nome, o.titulo, o.resumo, u.nome
         
         order by o.id_obra`)
     

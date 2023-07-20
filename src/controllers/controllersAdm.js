@@ -4,7 +4,9 @@ import { primeiraLetraMaiuscula } from "./controllersGerais.js";
 
 const MostrarTodosAdministradores = async (req, res) => {
     try {
-        const administradores = await pool.query('SELECT id_usuario, nome FROM usuario u inner join administrador a where a.id_usuario = u.id_usuario ');
+        const administradores = await pool.query(`SELECT u.id_usuario, u.nome 
+        FROM usuario u 
+        inner join administrador a on a.id_usuario = u.id_usuario `);
 
     if (administradores.rows.length === 0) {
       return res.status(200).json({ mensagem: "Não há administradores cadastrados.", status: 400 });
@@ -19,12 +21,12 @@ const MostrarTodosAdministradores = async (req, res) => {
 const MostrarAdministradorID = async (req, res) => {
     try {
         const administrador = await pool.query(`SELECT
-        id_usuario, nome, senha
+        u.id_usuario, u.nome, u.senha
       FROM
         usuario u
-      inner join administrador a
-      WHERE
-      u.id_usuario = a.id_usuario and a.id_usuario = ${req.params.id};`)
+      inner join administrador a on
+      
+      u.id_usuario = a.id_usuario and a.id_usuario =${req.params.id};`)
           
           return res.status(200).json(administrador.rows[0])
     } catch (erro){
