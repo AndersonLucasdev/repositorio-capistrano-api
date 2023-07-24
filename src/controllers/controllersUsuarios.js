@@ -20,6 +20,35 @@ const MostrarTodosUsuarios = async (req, res) => {
   }
 };
 
+
+// autor que cada usuario cadastrou
+const AutorCadaUsuario = async (req, res) => {
+    const { nome } = req.body;
+    const {
+
+    } = req.body
+    try {
+        await pool.query(`SELECT 
+    au.id_autor, au.nome as autores
+FROM 
+    obra o
+INNER JOIN 
+    obras_autores oa ON o.id_obra = oa.id_obra
+INNER JOIN 
+    autor au ON au.id_autor = oa.id_autor
+INNER JOIN 
+    usuario u ON u.id_usuario = o.id_usuario
+WHERE 
+    u.nome ILIKE '%' || '${nome}' || '%'
+GROUP BY 
+    au.id_autor, au.nome
+ORDER BY 
+    au.id_autor`)
+    } catch {
+
+    }
+}
+
 const EncontrarUsuarioId = async (req, res) => {
     try {
         const Usuario = await pool.query(`SELECT
@@ -127,7 +156,7 @@ const Login = async (req, res) => {
 // funções para excluir (path)
 const removeUsuarioID = async (req, res) => {
     try {
-        const {id_usuario} = req
+        const {id_usuario} = req.params
 
         const verificaUsuarioTemObra = await pool.query(
             'SELECT id_usuario FROM obra WHERE id_usuario = $1',

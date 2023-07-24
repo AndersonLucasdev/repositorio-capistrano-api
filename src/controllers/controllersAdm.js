@@ -60,3 +60,24 @@ const CadastrarAdministrador = async (req, res) => {
         res.status(500).json({Mensagem: erro.Mensagem})
     }
 }
+
+const RemoveAdministrados = async (req, res) => {
+    try {
+        const {id_administrador} = req.params
+
+        await pool.query(
+            'Delete from administrador where id_administrador = $1',
+            [id_administrador]
+          );
+
+    return res.status(200).json({Mensagem: "Administrador excluído com sucesso."})
+    }
+
+    catch (erro){
+        res.status(500).json({Mensagem: erro.Mensagem})
+    }
+}
+
+export {
+    CadastrarAdministrador, MostrarTodosAdministradores, MostrarAdministradorID, RemoveAdministrados
+}
