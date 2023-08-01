@@ -102,7 +102,7 @@ const CadastrarUsuario = async (req, res) => {
                             res.status(201).json(
                                 {
                                     user: {
-                                        nome: CadastrarUsuario.nome,
+                                        nome: CadastroUsuario.nome,
                                     },
                                     Mensagem: "Usuario cadastrada com sucesso."
                                 }

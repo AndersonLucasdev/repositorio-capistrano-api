@@ -259,13 +259,6 @@ const CadastrarObra = async (req, res) => {
         [AutorFormatada]
       );
 
-      if (verificaAutor.rowCount === 0) {
-        return res.status(200).json({
-          Mensagem: `O autor "${AutorFormatada}" não foi encontrado.`,
-          status: 400,
-        });
-      }
-
       lista_autores_id.push(verificaAutor.rows[0].id_autor);
     }
 
@@ -287,8 +280,9 @@ const CadastrarObra = async (req, res) => {
       ]
     );
 
+    console.log(CadastrarObra)
     const id_obra = CadastroObra.rows[0].id_obra;
-
+    console.log(id_obra)
     // Relaciona na tabela autor
     for (const autor_id of lista_autores_id) {
       await pool.query(
