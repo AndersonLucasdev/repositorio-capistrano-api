@@ -2,7 +2,7 @@ import pg from "pg";
 const { Pool } = pg;
 
 const pool = new Pool({
-  connectionString: "postgres://default:sS0nQhp8gBfN@ep-still-field-699624.us-east-1.postgres.vercel-storage.com:5432/verceldb",
+  connectionString: "postgres://default:XwjIE7rHiPl3@ep-soft-scene-78939587.us-east-1.postgres.vercel-storage.com:5432/verceldb",
   ssl: {
     rejectUnauthorized: false, 
     sslmode: 'require' 
@@ -40,7 +40,8 @@ const createTables = async () => {
 
       CREATE TABLE IF NOT EXISTS obras_autores (
         id_obra SERIAL REFERENCES obra(id_obra),
-        id_autor SERIAL REFERENCES autor(id_autor)
+        id_autor SERIAL REFERENCES autor(id_autor),
+        PRIMARY KEY (id_obra, id_autor)
       );
     `);
     client.release();

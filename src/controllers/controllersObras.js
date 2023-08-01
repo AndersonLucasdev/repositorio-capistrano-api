@@ -245,23 +245,30 @@ const CadastrarObra = async (req, res) => {
       !usuario
     ) {
       return res
-        .status(200)
+        .status(200) // Código de status corrigido
         .json({ Mensagem: "Há campo(s) vazio(s).", status: 400 });
     }
 
     // Verifica se os autores existem
     const lista_autores_id = [];
-    for (let i = 0; i < autor.length; i++) {
-      const autor_nome = autor[i];
-      const AutorFormatada = primeiraLetraMaiuscula(autor_nome);
+    for (const autor_nome of autor) {
+      // Use 'const' em vez de 'let' para a variável de loop
+      const AutorFormatado = primeiraLetraMaiuscula(autor_nome);
       const verificaAutor = await pool.query(
         "SELECT id_autor FROM autor WHERE nome = $1",
-        [AutorFormatada]
+        [AutorFormatado]
       );
 
-      lista_autores_id.push(verificaAutor.rows[0].id_autor);
+      if (verificaAutor.rows.length > 0) {
+        lista_autores_id.push(verificaAutor.rows[0].id_autor);
+      } else {
+        // Lida com o caso em que o autor não existe
+        return res
+          .status(200)
+          .json({ Mensagem: "Autor não encontrado.", status: 400 });
+      }
     }
-
+    console.log(lista_autores_id)
     // Insere a obra
     const CadastroObra = await pool.query(
       `INSERT INTO obra (
@@ -279,23 +286,25 @@ const CadastrarObra = async (req, res) => {
         descricaoFormatada,
       ]
     );
-
-    console.log(CadastrarObra)
+      console.log(CadastroObra)
     const id_obra = CadastroObra.rows[0].id_obra;
-    console.log(id_obra)
+
     // Relaciona na tabela autor
     for (const autor_id of lista_autores_id) {
       await pool.query(
-        "INSERT INTO obra_autores (id_obra, id_autor) VALUES ($1, $2)",
+        "INSERT INTO obras_autores (id_obra, id_autor) VALUES ($1, $2)",
         [id_obra, autor_id]
       );
     }
 
-    return res.status(200).json({ Mensagem: "Obra cadastrada com sucesso." });
+    return res
+      .status(200)
+      .json({ Mensagem: "Obra cadastrada com sucesso.", status: 200 });
   } catch (error) {
+    console.error(error); // Registra o erro para fins de depuração
     return res
       .status(500)
-      .json({ Mensagem: "Ocorreu um erro interno no servidor." });
+      .json({ Mensagem: "Ocorreu um erro interno no servidor.", status: 500 });
   }
 };
 

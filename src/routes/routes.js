@@ -7,6 +7,10 @@ import { MostrarTodosUsuarios, EncontrarUsuarioId, CadastrarUsuario, Login, remo
 
 import {validarToken, deletarToken} from '../controllers/controllersToken.js'
 
+import { CadastrarAdministrador, MostrarTodosAdministradores, MostrarAdministradorID, RemoveAdministrados } from "../controllers/controllersAdm.js";
+
+import { MostrarTodosAutores, MostrarAutorID, CadastrarAutor } from "../controllers/controllersAutores.js";
+
 const route = Router()
 
 // Obras
@@ -28,6 +32,12 @@ route.post("/cadastro_obras", CadastrarObra)
 // excluir
 route.delete("/excluir_obra/:id", ExcluirObra)
 
+// autor
+route.post("/cadastro_autor", CadastrarAutor)
+route.get("/mostrar_todos_autores", MostrarTodosAutores)
+route.get("/mostrar_autor:id", MostrarAutorID)
+
+
 // Usuários
 //mostrar
 route.get("/mostrar_todos_usuarios", MostrarTodosUsuarios)
@@ -47,4 +57,9 @@ route.post("validar_token", validarToken)
 route.post("deletar_token", deletarToken)
 
 
+// administrador
+route.post("/cadastrar_adm", CadastrarAdministrador)
+route.get("/mostrar_adm:id", MostrarAdministradorID)
+route.get("/mostrar_todos_adm", MostrarTodosAdministradores)
+route.delete("/deletar_adm", RemoveAdministrados)
 export default route

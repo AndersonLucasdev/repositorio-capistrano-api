@@ -85,6 +85,7 @@ const ExcluirAutor = async (req, res) => {
 
     await pool.query(`DELETE FROM obra_autores WHERE id_autor = ${id_autor}`);
 
+    await pool.query(`DELTE FROM autor where id_autor = ${id_autor}`)
     return res
     .status(200)
     .json({ Mensagem: "Autor excluído com sucesso."});
