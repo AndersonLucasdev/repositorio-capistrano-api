@@ -2,11 +2,12 @@ import pg from "pg";
 const { Pool } = pg;
 
 const pool = new Pool({
-  connectionString: "postgres://default:XwjIE7rHiPl3@ep-soft-scene-78939587.us-east-1.postgres.vercel-storage.com:5432/verceldb",
+  connectionString:
+  "postgres://default:PmXFDdefV0z1@ep-broken-resonance-03018281.us-east-1.postgres.vercel-storage.com:5432/verceldb",
   ssl: {
-    rejectUnauthorized: false, 
-    sslmode: 'require' 
-  }
+    rejectUnauthorized: false,
+    sslmode: "require",
+  },
 });
 
 const createTables = async () => {
@@ -35,7 +36,9 @@ const createTables = async () => {
         titulo VARCHAR(255),
         link VARCHAR(255),
         resumo TEXT,
-        descricao TEXT
+        descricao TEXT,
+        data_publi DATE,
+        img VARCHAR(255)
       );
 
       CREATE TABLE IF NOT EXISTS obras_autores (
@@ -45,9 +48,9 @@ const createTables = async () => {
       );
     `);
     client.release();
-    console.log('Tabelas e campos criados com sucesso!');
+    console.log("Tabelas e campos criados com sucesso!");
   } catch (error) {
-    console.error('Erro ao criar tabelas e campos:', error);
+    console.error("Erro ao criar tabelas e campos:", error);
   }
 };
 
