@@ -41,6 +41,17 @@ const createTables = async () => {
         img VARCHAR(255)
       );
 
+      CREATE TABLE IF NOT EXISTS obras_assuntos (
+        id_assunto SERIAL REFERENCES assunto(id_assunto),
+        id_obra SERIAL REFERENCES obra(id_obra),
+        PRIMARY KEY (id_obra, id_assunto)
+      )
+
+      CREATE TABLE IF NOT EXISTS assunto (
+        id_assunto SERIAL PRIMARY KEY,
+        nome VARCHAR(255)
+      )
+
       CREATE TABLE IF NOT EXISTS obras_autores (
         id_obra SERIAL REFERENCES obra(id_obra),
         id_autor SERIAL REFERENCES autor(id_autor),

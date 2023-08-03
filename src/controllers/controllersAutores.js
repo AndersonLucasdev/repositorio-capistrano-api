@@ -14,7 +14,7 @@ const MostrarTodosAutores = async (req, res) => {
     if (Autores.rows.length === 0) {
       return res
         .status(200)
-        .json({ mensagem: "Obra(s) não encontrado(s)", status: 400 });
+        .json({ mensagem: "Autore(s) não encontrado(s)", status: 400 });
     }
     return res.status(200).json(Autores.rows);
   } catch (error) {
@@ -68,29 +68,60 @@ const CadastrarAutor = async (req, res) => {
 const ExcluirAutor = async (req, res) => {
   const { id_autor } = req;
 
-    if (!id_autor) {
-      return res
-        .status(200)
-        .json({ Mensagem: "Id não informado.", status: 400 });
-    }
+  if (!id_autor) {
+    return res.status(200).json({ Mensagem: "Id não informado.", status: 400 });
+  }
 
-    const verficaAutorEmObra = await pool.query(`
-    select * from obras_autores where id_autor = $1`, [id_autor])
-    
-    if (verficaAutorEmObra.rows.length === 0) {
-      return res
-        .status(200)
-        .json({ Mensagem: "O autor possui obras.", status: 400 });
-    }
+  const verficaAutorEmObra = await pool.query(
+    `
+    select * from obras_autores where id_autor = $1`,
+    [id_autor]
+  );
 
-    await pool.query(`DELETE FROM obra_autores WHERE id_autor = ${id_autor}`);
-
-    await pool.query(`DELTE FROM autor where id_autor = ${id_autor}`)
+  if (verficaAutorEmObra.rows.length === 0) {
     return res
-    .status(200)
-    .json({ Mensagem: "Autor excluído com sucesso."});
-}
+      .status(200)
+      .json({ Mensagem: "O autor possui obras.", status: 400 });
+  }
 
-export {
-  MostrarTodosAutores, MostrarAutorID, CadastrarAutor
-}
+  await pool.query(`DELETE FROM obra_autores WHERE id_autor = ${id_autor}`);
+
+  await pool.query(`DELTE FROM autor where id_autor = ${id_autor}`);
+  return res.status(200).json({ Mensagem: "Autor excluído com sucesso." });
+};
+
+const EditarAutor = async (req, res) => {
+  const { nome_antigo, novo_nome } = req.body;
+  try {
+    if (!nome_antigo && novo_nome) {
+      return res
+        .status(200)
+        .json({ Mensagem: "Há campo(s) vazio(s).", status: 400 });
+    }
+
+    const nomeFormatado = novo_nome.primeiraLetraMaiuscula();
+
+    let id_autor;
+    const verificaAutor = await pool.query(
+      "Select * from autor WHERE nome = $1",
+      [nomeFormatado]
+    );
+
+    id_autor = verificaAutor.rows[0].id_autor;
+    res.status(200).json(verificaAutor.rows[0]);
+
+    const tratamentoNovoNome = primeiraLetraMaiuscula(novo_nome);
+
+    await pool.query("UPDATE autor SET nome = $1 WHERE id_autor = $2", [
+      tratamentoNovoNome,
+      id_autor,
+    ]);
+
+    return res.status(200).json({ Mensagem: "Autor editada com sucesso." });
+  } catch (erro) {
+    return res
+      .status(500)
+      .json({ Mensagem: "Ocorreu um erro interno no servidor." });
+  }
+};
+export { MostrarTodosAutores, MostrarAutorID, CadastrarAutor, ExcluirAutor, EditarAutor };
