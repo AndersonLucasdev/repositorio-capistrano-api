@@ -21,7 +21,7 @@ const MostrarTodasobra = async (req, res) => {
         INNER JOIN link li ON li.id_link = ol.id_link
         INNER JOIN obras_imgs oi ON oi.id_obra = o.id_obra
         INNER JOIN img im ON im.id_img = oi.id_img
-        GROUP BY o.id_obra, u.nome, o.titulo, o.resumo, o.img, o.data_publi, ass.nome
+        GROUP BY o.id_obra, u.nome, o.titulo, o.resumo, o.img, o.data_publi, ass.nome, li.link, im.link
         ORDER BY o.id_obra
       `);
 
@@ -78,7 +78,7 @@ GROUP BY
     o.link,
     o.img, 
     o.data_publi, 
-    ass.nome
+    ass.nome, li.link, im.link
     ;`);
 
     res.status(200).json(Obra.rows[0]);
@@ -114,7 +114,7 @@ const MostrarTodasObrasPorAssunto = async (req, res) => {
         INNER JOIN obras_imgs oi ON oi.id_obra = o.id_obra
         INNER JOIN img im ON im.id_img = oi.id_img
         where assunto = $1
-        GROUP BY o.id_obra, u.nome, o.titulo, o.resumo, o.img, o.data_publi, ass.nome
+        GROUP BY o.id_obra, u.nome, o.titulo, o.resumo, o.img, o.data_publi, ass.nome, li.link, im.link
         ORDER BY o.id_obra
         `,
       [assunto]
@@ -153,7 +153,7 @@ const ObrasOrdemAlfabetica = async (req, res) => {
           o.data_publi IS NOT NULL
 
       GROUP BY 
-          o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_publi, ass.nome
+          o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_publi, ass.nome, li.link, im.link
       ORDER BY 
           o.titulo;
     `);
@@ -196,7 +196,7 @@ const ObrasMaisRecentes = async (req, res) => {
         INNER JOIN obras_imgs oi ON oi.id_obra = o.id_obra
         INNER JOIN img im ON im.id_img = oi.id_img
     GROUP BY 
-        o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_publi, ass.nome
+        o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_publi, ass.nome, li.link, im.link
     ORDER BY 
         o.data_publi DESC;
   `);
@@ -241,7 +241,7 @@ const ObrasMaisAntigas = async (req, res) => {
       WHERE 
           o.data_publi IS NOT NULL
       GROUP BY 
-          o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_publi, ass.nome
+          o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_publi, ass.nome, li.link, im.link
       ORDER BY 
           o.data_publi ASC;
     `);
@@ -288,7 +288,7 @@ INNER JOIN
 WHERE 
     o.titulo ILIKE '%' || '${titulo}' || '%'
 GROUP BY 
-    o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_publi, ass.nome
+    o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_publi, ass.nome, li.link, im.link
 ORDER BY 
     o.id_obra;
     `);
@@ -329,7 +329,7 @@ const MostrarPeloNomeAutor = async (req, res) => {
         INNER JOIN img im ON im.id_img = oi.id_img
         where au.nome ILIKE '%' || '${nome}' || '%'
         
-        group by o.id_obra, au.nome, o.titulo, o.resumo, u.nome, o.img, o.data_publi, ass.nome
+        group by o.id_obra, au.nome, o.titulo, o.resumo, u.nome, o.img, o.data_publi, ass.nome, li.link, im.link
         
         order by o.id_obra
     `);
@@ -377,7 +377,7 @@ INNER JOIN
 WHERE 
     u.nome ILIKE '%' || '${nome}' || '%'
 GROUP BY 
-    o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_publi, as.nome
+    o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_publi, as.nome, li.link, im.link
 ORDER BY 
     o.id_obra;
     `);
@@ -418,7 +418,7 @@ INNER JOIN
         INNER JOIN img im ON im.id_img = oi.id_img
         where au.nome = 'Capistrano de Abreu'
         
-        group by o.id_obra, au.nome, o.titulo, o.resumo, u.nome, ass.nome
+        group by o.id_obra, au.nome, o.titulo, o.resumo, u.nome, ass.nome, li.link, im.link
         
         order by o.id_obra`);
 
@@ -458,7 +458,7 @@ INNER JOIN
         INNER JOIN img im ON im.id_img = oi.id_img
         where au.nome <> 'Capistrano de Abreu'
         
-        group by o.id_obra, au.nome, o.titulo, o.resumo, u.nome, ass.nome
+        group by o.id_obra, au.nome, o.titulo, o.resumo, u.nome, ass.nome, li.link, im.link
         
         order by o.id_obra`);
 
