@@ -44,7 +44,9 @@ GROUP BY
     au.id_autor, au.nome
 ORDER BY 
     au.id_autor`);
-  } catch {}
+  } catch (erro) {
+    res.status(500).json({ mensagem: erro.message });
+  }
 };
 
 const EncontrarUsuarioId = async (req, res) => {
@@ -169,10 +171,20 @@ const Login = async (req, res) => {
     );
     if (verificaUsuarioAdm.rows.length > 0) {
       res.cookie("token", token, { httpOnly: true });
-      res.status(200).json({ token, usuarioId, novoUsuario, usuarioSenha, tipoUsuario: admin });
+      res
+        .status(200)
+        .json({
+          token,
+          usuarioId,
+          novoUsuario,
+          usuarioSenha,
+          tipoUsuario: admin,
+        });
     }
     res.cookie("token", token, { httpOnly: true });
-    res.status(200).json({ token, usuarioId, novoUsuario, usuarioSenha, tipoUsuario: user });
+    res
+      .status(200)
+      .json({ token, usuarioId, novoUsuario, usuarioSenha, tipoUsuario: user });
   } catch (erro) {
     return res.status(500).json({ Mensagem: erro.Mensagem });
   }

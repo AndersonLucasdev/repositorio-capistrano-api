@@ -99,7 +99,7 @@ const EditarAutor = async (req, res) => {
         .json({ Mensagem: "Há campo(s) vazio(s).", status: 400 });
     }
 
-    const nomeFormatado = novo_nome.primeiraLetraMaiuscula();
+    const nomeFormatado = primeiraLetraMaiuscula(nome_antigo);
 
     let id_autor;
     const verificaAutor = await pool.query(

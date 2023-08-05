@@ -48,10 +48,14 @@ import {
   EditarAssunto,
 } from "../controllers/controllersAssunto.js";
 
+import { MostrarLinkID, MostrarTodoslinks, CadastrarLink, ExcluirLink, EditarLink } from "../controllers/controllersLink.js";
+
+import { MostrarImgID, MostrarTodosimg, CadastrarImagem, ExcluirImg, EditarImg } from "../controllers/controllersImg.js";
+
 const route = Router();
 
+
 // Obras
-// mostrar
 route.get("/mostrar_todas_obras", MostrarTodasobra);
 route.get("/mostrar_todas_capistrano", MostrarTodasobraCapistrano);
 route.get("/mostrar_outras_obras", MostrarTodasobraOutrosAutores);
@@ -64,12 +68,9 @@ route.post("/pesquisar_nome_autor", MostrarPeloNomeAutor);
 route.post("/pesquisar_nome_usuario", MostrarPeloNomeUsuario);
 route.post("/mostrar_todas_obras_assunto", MostrarTodasObrasPorAssunto);
 
-// cadastrar
+
 route.post("/cadastro_obras", CadastrarObra);
 
-// editar
-
-// excluir
 route.delete("/excluir_obra/:id", ExcluirObra);
 
 // autor
@@ -79,19 +80,15 @@ route.get("/mostrar_autor:id", MostrarAutorID);
 route.patch("/editar_autor", EditarAutor)
 
 // Usuários
-//mostrar
 route.get("/mostrar_todos_usuarios", MostrarTodosUsuarios);
 route.get("/mostrar_usuarioid/:id", EncontrarUsuarioId);
 
-// cadastrar/logar
 route.post("/cadastro_usuarios", CadastrarUsuario);
 route.post("/login", Login);
 
-// excluir
 route.delete("excluir_usuario/:id", removeUsuarioID);
 
 // token
-// validar
 route.post("validar_token", validarToken);
 route.post("deletar_token", deletarToken);
 
@@ -107,4 +104,21 @@ route.get("/mostrar_assuntoid/:id", MostrarAssuntosID);
 route.post("/cadastrar_assunto", CadastrarAssunto);
 route.delete("/deletar_assunto", ExcluirAssunto);
 route.patch("/editar_assunto", EditarAssunto);
+
+// link
+route.get("/mostrar_linkid/:id", MostrarLinkID)
+route.get("/msotrar_todos_links", MostrarTodoslinks)
+route.post("/cadastrar_link", CadastrarLink)
+route.delete("/remover_link", ExcluirLink)
+route.patch("/editar_link", EditarLink)
+
+
+// img
+route.get("/mostrar_imgid/:id", MostrarImgID)
+route.get("/msotrar_todos_imgs", MostrarTodosimg)
+route.post("/cadastrar_img", CadastrarImagem)
+route.delete("/remover_img", ExcluirImg)
+route.patch("/editar_img", EditarImg)
+
+
 export default route;
