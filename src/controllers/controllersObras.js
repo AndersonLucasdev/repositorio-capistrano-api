@@ -678,19 +678,15 @@ const CadastrarObra = async (req, res) => {
       `INSERT INTO obra (
           id_usuario,
           titulo,
-          link,
           resumo,
           descricao,
-          img,
           data_publi
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id_obra`,
+        ) VALUES ($1, $2, $3, $4, $5) RETURNING id_obra`,
       [
         usuario,
         TituloFormatado,
-        linkFormatado,
         resumoFormatado,
         descricaoFormatada,
-        imgFormatada,
         dataFormatada,
       ]
     );
