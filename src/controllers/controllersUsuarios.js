@@ -26,7 +26,6 @@ const MostrarTodosUsuarios = async (req, res) => {
 // autor que cada usuario cadastrou
 const AutorCadaUsuario = async (req, res) => {
   const { nome } = req.body;
-  const {} = req.body;
   try {
     await pool.query(`SELECT 
     au.id_autor, au.nome as autores
@@ -63,6 +62,8 @@ const EncontrarUsuarioId = async (req, res) => {
     return res.status(500).json({ Mensagem: erro.Mensagem });
   }
 };
+
+
 
 // funções para cadastro (post)
 const CadastrarUsuario = async (req, res) => {

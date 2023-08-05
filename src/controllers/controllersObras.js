@@ -38,6 +38,7 @@ const MostrarTodasobra = async (req, res) => {
 };
 
 const MostrarObraPeloID = async (req, res) => {
+  const {id} = req.params
   try {
     const Obra = await pool.query(`
        SELECT 
@@ -69,7 +70,7 @@ INNER JOIN
         INNER JOIN obras_imgs oi ON oi.id_obra = o.id_obra
         INNER JOIN img im ON im.id_img = oi.id_img
 WHERE 
-    o.id_obra = ${req.params}
+    o.id_obra = ${id}
 GROUP BY 
     o.titulo,
     o.resumo,
@@ -348,6 +349,47 @@ const MostrarPeloNomeAutor = async (req, res) => {
   }
 };
 
+const MostrarObrasPeloIDAutor = async (req, res) => {
+  const { id_autor } = req.params;
+
+  try {
+    const obra = await pool.query(`
+    SELECT 
+        o.id_obra, o.titulo, o.resumo, o.img, o.data_publi, u.nome as usuario, 
+        string_agg(DISTINCT li.link, ', ') as links, 
+        string_agg(DISTINCT im.link, ', ') as imgs,
+        string_agg(DISTINCT ass.nome, ', ') as assuntos, string_agg(DISTINCT au.nome, ', ') as autores
+        FROM obra o
+        inner join obras_autores oa on o.id_obra = oa.id_obra
+        inner join autor au on au.id_autor = oa.id_autor
+        inner join usuario u on u.id_usuario = o.id_usuario
+        INNER JOIN obras_assuntos oa ON oa.id_obra = o.id_obra
+        INNER JOIN assunto ass ON ass.id_assunto = oa.id_assunto
+        INNER JOIN obras_links ol ON ol.id_obra = o.id_obra
+        INNER JOIN link li ON li.id_link = ol.id_link
+        INNER JOIN obras_imgs oi ON oi.id_obra = o.id_obra
+        INNER JOIN img im ON im.id_img = oi.id_img
+        where au.id_autor = $1
+        
+        group by o.id_obra, au.nome, o.titulo, o.resumo, u.nome, o.img, o.data_publi, ass.nome, li.link, im.link
+        
+        order by o.id_obra
+    `, [id_autor]);
+
+    if (obra.rows.length === 0) {
+      return res
+        .status(200)
+        .json({ mensagem: "Obra(s) não encontrado(s)", status: 400 });
+    }
+
+    return res.status(200).json(obra.rows);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ mensagem: "Ocorreu um erro interno no servidor" });
+  }
+};
+
 const MostrarPeloNomeUsuario = async (req, res) => {
   const { nome } = req.body;
 
@@ -381,6 +423,53 @@ GROUP BY
 ORDER BY 
     o.id_obra;
     `);
+
+    if (obra.rows.length === 0) {
+      return res
+        .status(200)
+        .json({ mensagem: "Obra(s) não encontrado(s)", status: 400 });
+    }
+
+    return res.status(200).json(obra.rows);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ mensagem: "Ocorreu um erro interno no servidor" });
+  }
+};
+
+const MostrarObraPeloIDUsuario = async (req, res) => {
+  const {id_usuario} = req.params
+  try {
+    const obra = await pool.query(`
+    SELECT 
+    o.id_obra, o.titulo, o.img, o.data_publi, o.resumo, u.nome as usuario, 
+    string_agg(DISTINCT li.link, ', ') as links, 
+    string_agg(DISTINCT im.link, ', ') as imgs,
+    string_agg(DISTINCT as.nome, ', ') ass assuntos, string_agg(au.nome, ', ') as autores
+FROM 
+    obra o
+INNER JOIN 
+    obras_autores oa ON o.id_obra = oa.id_obra
+INNER JOIN 
+    autor au ON au.id_autor = oa.id_autor
+INNER JOIN 
+    usuario u ON u.id_usuario = o.id_usuario
+INNER JOIN 
+    obras_assuntos oa ON oa.id_obra = o.id_obra
+INNER JOIN 
+    assunto ass ON ass.id_assunto = oa.id_assunto
+    INNER JOIN obras_links ol ON ol.id_obra = o.id_obra
+        INNER JOIN link li ON li.id_link = ol.id_link
+        INNER JOIN obras_imgs oi ON oi.id_obra = o.id_obra
+        INNER JOIN img im ON im.id_img = oi.id_img
+WHERE 
+    u.id_usuario = $1
+GROUP BY 
+    o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_publi, as.nome, li.link, im.link
+ORDER BY 
+    o.id_obra;
+    `, [id_usuario]);
 
     if (obra.rows.length === 0) {
       return res
@@ -782,6 +871,8 @@ export {
   MostrarTodasobraCapistrano,
   MostrarTodasobraOutrosAutores,
   ObrasOrdemAlfabetica,
+  MostrarObraPeloIDUsuario,
+  MostrarObrasPeloIDAutor,
   ObrasMaisRecentes,
   ObrasMaisAntigas,
   CadastrarObra,
