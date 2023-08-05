@@ -27,7 +27,7 @@ const MostrarTodosUsuarios = async (req, res) => {
 const AutorCadaUsuario = async (req, res) => {
   const { nome } = req.body;
   try {
-    await pool.query(`SELECT 
+    autores = await pool.query(`SELECT 
     au.id_autor, au.nome as autores
 FROM 
     obra o
@@ -43,6 +43,13 @@ GROUP BY
     au.id_autor, au.nome
 ORDER BY 
     au.id_autor`);
+    if (autores.rows.length === 0) {
+      return res
+        .status(200)
+        .json({ mensagem: "Não há autores cadastrados.", status: 400 });
+    }
+
+    res.status(200).json(autores.rows);
   } catch (erro) {
     res.status(500).json({ mensagem: erro.message });
   }
@@ -55,7 +62,7 @@ const EncontrarUsuarioId = async (req, res) => {
       FROM
         usuario
       WHERE
-      id_usuario = ${req.body};`);
+      id_usuario = ${req.params.id};`);
 
     return res.status(200).json(Usuario.rows[0]);
   } catch (erro) {
@@ -221,6 +228,7 @@ const removeUsuarioID = async (req, res) => {
 
 export {
   MostrarTodosUsuarios,
+  AutorCadaUsuario,
   EncontrarUsuarioId,
   CadastrarUsuario,
   Login,

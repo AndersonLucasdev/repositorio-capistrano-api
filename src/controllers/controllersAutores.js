@@ -66,7 +66,7 @@ const CadastrarAutor = async (req, res) => {
 };
 
 const ExcluirAutor = async (req, res) => {
-  const { id_autor } = req;
+  const { id_autor } = req.params;
 
   if (!id_autor) {
     return res.status(200).json({ Mensagem: "Id não informado.", status: 400 });
@@ -86,7 +86,7 @@ const ExcluirAutor = async (req, res) => {
 
   await pool.query(`DELETE FROM obra_autores WHERE id_autor = ${id_autor}`);
 
-  await pool.query(`DELTE FROM autor where id_autor = ${id_autor}`);
+  await pool.query(`DELETE FROM autor where id_autor = ${id_autor}`);
   return res.status(200).json({ Mensagem: "Autor excluído com sucesso." });
 };
 

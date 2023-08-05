@@ -3,7 +3,7 @@ const { Pool } = pg;
 
 const pool = new Pool({
   connectionString:
-  "postgres://default:pIRNj9Q6YXuq@ep-steep-sky-26963460.us-east-1.postgres.vercel-storage.com:5432/verceldb",
+  "postgres://default:lOACJLHI0oX5@ep-noisy-wind-97242483.us-east-1.postgres.vercel-storage.com:5432/verceldb",
   ssl: {
     rejectUnauthorized: false,
     sslmode: "require",

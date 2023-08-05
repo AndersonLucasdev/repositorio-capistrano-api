@@ -68,7 +68,7 @@ const CadastrarAssunto = async (req, res) => {
 };
 
 const ExcluirAssunto = async (req, res) => {
-  const { id_assunto } = req;
+  const { id_assunto } = req.params;
 
   if (!id_assunto) {
     return res.status(200).json({ Mensagem: "Id não informado.", status: 400 });
@@ -90,7 +90,7 @@ const ExcluirAssunto = async (req, res) => {
     `DELETE FROM obra_assuntos WHERE id_assunto = ${id_assunto}`
   );
 
-  await pool.query(`DELTE FROM assunto where id_assunto = ${id_assunto}`);
+  await pool.query(`DELETE FROM assunto where id_assunto = ${id_assunto}`);
   return res.status(200).json({ Mensagem: "Assunto excluído com sucesso." });
 };
 
@@ -103,7 +103,7 @@ const EditarAssunto = async (req, res) => {
         .json({ Mensagem: "Há campo(s) vazio(s).", status: 400 });
     }
 
-    const nomeFormatado = novo_nome.primeiraLetraMaiuscula();
+    const nomeFormatado = novo_nome.primeiraLetraMaiuscula(novo_nome);
 
     let id_assunto;
     const verificaAssunto = await pool.query(

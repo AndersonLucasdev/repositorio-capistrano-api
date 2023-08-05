@@ -15,10 +15,12 @@ import {
   ObrasMaisAntigas,
   CadastrarObra,
   ExcluirObra,
+  EditarObra,
 } from "../controllers/controllersObras.js";
 
 import {
   MostrarTodosUsuarios,
+  AutorCadaUsuario,
   EncontrarUsuarioId,
   CadastrarUsuario,
   Login,
@@ -80,22 +82,26 @@ route.post("/pesquisar_nome_obra", MostrarPeloNomeObra);
 route.post("/pesquisar_nome_autor", MostrarPeloNomeAutor);
 route.post("/pesquisar_nome_usuario", MostrarPeloNomeUsuario);
 route.post("/mostrar_todas_obras_assunto", MostrarTodasObrasPorAssunto);
-route.get("/mostrar_obras_id_autor", MostrarObrasPeloIDAutor)
-route.get("/mostrar_obras_id_")
+route.get("/mostrar_obras_id_autor", MostrarObrasPeloIDAutor);
+route.get("/mostrar_obras_id_usuario", MostrarObraPeloIDUsuario);
 
 route.post("/cadastro_obras", CadastrarObra);
 
 route.delete("/excluir_obra/:id", ExcluirObra);
+
+route.patch("/editar_obra", EditarObra);
 
 // autor
 route.post("/cadastro_autor", CadastrarAutor);
 route.get("/mostrar_todos_autores", MostrarTodosAutores);
 route.get("/mostrar_autor:id", MostrarAutorID);
 route.patch("/editar_autor", EditarAutor);
+route.delete("/excluir_autor", ExcluirAutor)
 
 // Usuários
 route.get("/mostrar_todos_usuarios", MostrarTodosUsuarios);
 route.get("/mostrar_usuarioid/:id", EncontrarUsuarioId);
+route.get("/mostrar_autores_dos_usuarios", AutorCadaUsuario);
 
 route.post("/cadastro_usuarios", CadastrarUsuario);
 route.post("/login", Login);

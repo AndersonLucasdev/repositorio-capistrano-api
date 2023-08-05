@@ -86,7 +86,7 @@ const ExcluirLink = async (req, res) => {
 
   await pool.query(`DELETE FROM obra_links WHERE id_link = ${id_link}`);
 
-  await pool.query(`DELTE FROM link where id_link = ${id_link}`);
+  await pool.query(`DELETE FROM link where id_link = ${id_link}`);
   return res.status(200).json({ Mensagem: "Link excluído com sucesso." });
 };
 
@@ -110,7 +110,7 @@ const EditarLink = async (req, res) => {
     id_link = verificaLink.rows[0].id_link;
     res.status(200).json(verificaLink.rows[0]);
 
-    const tratamentoNovoNome = primeiraLetraMaiuscula(link_nova);
+    const tratamentoNovoNome = link_nova.trim()
 
     await pool.query("UPDATE link SET link = $1 WHERE id_link = $2", [
       tratamentoNovoNome,

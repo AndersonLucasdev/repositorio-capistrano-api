@@ -66,7 +66,7 @@ const CadastrarImagem = async (req, res) => {
 };
 
 const ExcluirImg = async (req, res) => {
-  const { id_img } = req;
+  const { id_img } = req.params;
 
   if (!id_img) {
     return res.status(200).json({ Mensagem: "Id não informado.", status: 400 });
@@ -86,7 +86,7 @@ const ExcluirImg = async (req, res) => {
 
   await pool.query(`DELETE FROM obra_imgs WHERE id_img = ${id_link}`);
 
-  await pool.query(`DELTE FROM img where id_img = ${id_img}`);
+  await pool.query(`DELETE FROM img where id_img = ${id_img}`);
   return res.status(200).json({ Mensagem: "Imagem excluído com sucesso." });
 };
 
@@ -110,8 +110,7 @@ const EditarImg = async (req, res) => {
     id_img = verificaImg.rows[0].id_img;
     res.status(200).json(verificaImg.rows[0]);
 
-    const tratamentoNovoNome = primeiraLetraMaiuscula(img_nova);
-
+    const tratamentoNovoNome = img_nova.trim()
     await pool.query("UPDATE img SET link = $1 WHERE id_img = $2", [
       tratamentoNovoNome,
       id_img,
