@@ -478,25 +478,25 @@ INNER JOIN
 
 // funções para cadastro (post)
 const CadastrarObra = async (req, res) => {
-  const { titulo, descricao, resumo, link, usuario, autor, img, data_publi, assunto } =
+  const { titulo, descricao, resumo, data_publi, usuario, autor, assunto, link, img } =
     req.body;
 
   const TituloFormatado = primeiraLetraMaiuscula(titulo);
   const descricaoFormatada = primeiraLetraMaiuscula(descricao);
   const resumoFormatado = capitalizarEPontuar(resumo).trim();
-  const linkFormatado = link.trim();
-  const imgFormatada = img.trim();
   const dataFormatada = data_publi.trim();
   try {
     if (
       !TituloFormatado ||
       !descricaoFormatada ||
       !resumoFormatado ||
-      !linkFormatado ||
-      !usuario ||
-      !imgFormatada ||
       !dataFormatada ||
-      !assunto
+      !autor ||
+      !usuario ||
+      !assunto ||
+      !link ||
+      !img
+
     ) {
       return res
         .status(200) // Código de status corrigido
@@ -541,6 +541,47 @@ const CadastrarObra = async (req, res) => {
           .json({ Mensagem: "Autor não encontrado.", status: 400 });
       }
     }
+
+    const lista_link_id = [];
+    for (const link_nome of link) {
+      // Use 'const' em vez de 'let' para a variável de loop
+      const linkFormatado = link_nome.trim()
+      const verificaLink = await pool.query(
+        "SELECT id_link FROM link WHERE link = $1",
+        [linkFormatado]
+      );
+
+      if (verificaLink.rows.length > 0) {
+        lista_img_id.push(verificaLink.rows[0].id_link);
+      } else {
+        // Lida com o caso em que o autor não existe
+        return res
+          .status(200)
+          .json({ Mensagem: "Link não encontrada.", status: 400 });
+      }
+    }
+
+
+    const lista_img_id = [];
+    for (const img_nome of img) {
+      // Use 'const' em vez de 'let' para a variável de loop
+      const ImgFormatado = img_nome.trim()
+      const verificaImg = await pool.query(
+        "SELECT id_img FROM img WHERE link = $1",
+        [ImgFormatado]
+      );
+
+      if (verificaImg.rows.length > 0) {
+        lista_img_id.push(verificaImg.rows[0].id_img);
+      } else {
+        // Lida com o caso em que o autor não existe
+        return res
+          .status(200)
+          .json({ Mensagem: "Imagem não encontrada.", status: 400 });
+      }
+    }
+
+    
     
     console.log(lista_autores_id);
     // Insere a obra
@@ -578,6 +619,18 @@ const CadastrarObra = async (req, res) => {
     for (const assunto_id of lista_assuntos_id) {
       await pool.query(
         "INSERT INTO obras_assuntos (id_obra, id_assunto) VALUES ($1, $2)", [id_obra, assunto_id]
+      )
+    }
+
+    for (const link_id of lista_link_id) {
+      await pool.query(
+        "INSERT INTO obras_links (id_obra, id_link) VALUES ($1, $2)", [id_obra, link_id]
+      )
+    }
+
+    for (const img_id of lista_img_id) {
+      await pool.query(
+        "INSERT INTO obras_imgs (id_obra, id_img) VALUES ($1, $2)", [id_obra, id_img]
       )
     }
 
