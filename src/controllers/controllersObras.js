@@ -572,7 +572,7 @@ const CadastrarObra = async (req, res) => {
   } = req.body;
   
   const TituloFormatado = primeiraLetraMaiuscula(titulo);
-  const descricaoFormatada = primeiraLetraMaiuscula(descricao);
+  const descricaoFormatada = descricao.trim()
   const resumoFormatado = capitalizarEPontuar(resumo).trim();
   const dataFormatada = data_publi.trim();
   try {
@@ -764,7 +764,7 @@ const EditarObra = async (req, res) => {
 
     const TituloFormatado = primeiraLetraMaiuscula(titulo);
     const resumoFormatado = capitalizarEPontuar(resumo);
-    const descricaoFormatada = primeiraLetraMaiuscula(descricao);
+    const descricaoFormatada = descricao.trim()
     const dataFormatada = data ? data.trim() : undefined;
 
     let usuario_id;
