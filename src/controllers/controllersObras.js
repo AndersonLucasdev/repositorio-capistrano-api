@@ -28,7 +28,7 @@ GROUP BY o.id_obra, u.nome, o.titulo, o.data_publi, o.resumo, ass.nome, li.link,
 ORDER BY o.id_obra;
       `);
 
-      console.log(obra)
+    console.log(obra);
     if (obra.rows.length === 0) {
       res
         .status(200)
@@ -568,11 +568,11 @@ const CadastrarObra = async (req, res) => {
     assunto,
     link,
     img,
-    usuario
+    usuario,
   } = req.body;
-  
+
   const TituloFormatado = primeiraLetraMaiuscula(titulo);
-  const descricaoFormatada = descricao.trim()
+  const descricaoFormatada = descricao.trim();
   const resumoFormatado = capitalizarEPontuar(resumo).trim();
   const dataFormatada = data_publi.trim();
   try {
@@ -633,20 +633,22 @@ const CadastrarObra = async (req, res) => {
 
     const lista_link_id = [];
     for (const link_nome of link) {
-      // Use 'const' em vez de 'let' para a variável de loop
-      const linkFormatado = link_nome.trim();
+      let linkFormatado = link_nome.trim();
       const verificaLink = await pool.query(
         "SELECT id_link FROM link WHERE link = $1",
         [linkFormatado]
       );
 
       if (verificaLink.rows.length > 0) {
-        lista_img_id.push(verificaLink.rows[0].id_link);
+        lista_link_id.push(verificaLink.rows[0].id_link);
       } else {
         // Lida com o caso em que o autor não existe
-        return res
-          .status(200)
-          .json({ Mensagem: "Link não encontrada.", status: 400 });
+        const CadastroLink = await pool.query(
+          `INSERT INTO link (link) VALUES ($1) RETURNING id_link`,
+          [linkFormatado]
+        );
+
+        lista_link_id.push(CadastroLink.rows[0].id_link);
       }
     }
 
@@ -662,10 +664,13 @@ const CadastrarObra = async (req, res) => {
       if (verificaImg.rows.length > 0) {
         lista_img_id.push(verificaImg.rows[0].id_img);
       } else {
-        // Lida com o caso em que o autor não existe
-        return res
-          .status(200)
-          .json({ Mensagem: "Imagem não encontrada.", status: 400 });
+        // Lida com o caso em que a imagem não existe
+        const CadastroImg = await pool.query(
+          `INSERT INTO img (link) VALUES ($1) RETURNING id_img`,
+          [ImgFormatado]
+        );
+
+        lista_img_id.push(CadastroImg.rows[0].id_img);
       }
     }
 
@@ -711,7 +716,7 @@ const CadastrarObra = async (req, res) => {
         [id_obra, link_id]
       );
     }
-    
+
     for (const img_id of lista_img_id) {
       await pool.query(
         "INSERT INTO obras_imgs (id_obra, id_img) VALUES ($1, $2)",
@@ -756,15 +761,26 @@ const ExcluirObra = async (req, res) => {
 
 const EditarObra = async (req, res) => {
   try {
-    const { titulo, id_obra, link, usuario, resumo, descricao, img, data } = req.body;
+    const { titulo, id_obra, link, usuario, resumo, descricao, img, data } =
+      req.body;
 
-    if (!titulo && !link && !usuario && !resumo && !descricao && !img && !data) {
-      return res.status(400).json({ Mensagem: "Altere pelo menos um campo.", status: 400 });
+    if (
+      !titulo &&
+      !link &&
+      !usuario &&
+      !resumo &&
+      !descricao &&
+      !img &&
+      !data
+    ) {
+      return res
+        .status(400)
+        .json({ Mensagem: "Altere pelo menos um campo.", status: 400 });
     }
 
     const TituloFormatado = primeiraLetraMaiuscula(titulo);
     const resumoFormatado = capitalizarEPontuar(resumo);
-    const descricaoFormatada = descricao.trim()
+    const descricaoFormatada = descricao.trim();
     const dataFormatada = data ? data.trim() : undefined;
 
     let usuario_id;
@@ -773,68 +789,106 @@ const EditarObra = async (req, res) => {
     for (let i = 0; i < usuario.length; i++) {
       const usuario_nome = usuario[i];
       const usuarioFormatado = primeiraLetraMaiuscula(usuario_nome);
-      const verificaUsuario = await pool.query("SELECT id_usuario FROM usuario WHERE nome = $1", [usuarioFormatado]);
+      const verificaUsuario = await pool.query(
+        "SELECT id_usuario FROM usuario WHERE nome = $1",
+        [usuarioFormatado]
+      );
       usuario_id = verificaUsuario.rows[0].id_usuario;
       list_usuario_id.push(usuario_id);
     }
 
     // Atualiza os campos da tabela obra
     if (TituloFormatado) {
-      await pool.query("UPDATE obra SET titulo = $1 WHERE id_obra = $2", [TituloFormatado, id_obra]);
+      await pool.query("UPDATE obra SET titulo = $1 WHERE id_obra = $2", [
+        TituloFormatado,
+        id_obra,
+      ]);
     }
 
     if (resumoFormatado) {
-      await pool.query("UPDATE obra SET resumo = $1 WHERE id_obra = $2", [resumoFormatado, id_obra]);
+      await pool.query("UPDATE obra SET resumo = $1 WHERE id_obra = $2", [
+        resumoFormatado,
+        id_obra,
+      ]);
     }
 
     if (descricaoFormatada) {
-      await pool.query("UPDATE obra SET descricao = $1 WHERE id_obra = $2", [descricaoFormatada, id_obra]);
+      await pool.query("UPDATE obra SET descricao = $1 WHERE id_obra = $2", [
+        descricaoFormatada,
+        id_obra,
+      ]);
     }
 
     if (dataFormatada) {
-      await pool.query("UPDATE obra SET data_publi = $1 WHERE id_obra = $2", [dataFormatada, id_obra]);
+      await pool.query("UPDATE obra SET data_publi = $1 WHERE id_obra = $2", [
+        dataFormatada,
+        id_obra,
+      ]);
     }
 
     // Atualiza os campos que são listas
     if (usuario) {
       // Atualiza o usuario_id na tabela obra
-      await pool.query("UPDATE obra SET id_usuario = $1 WHERE id_obra = $2", [usuario_id, id_obra]);
+      await pool.query("UPDATE obra SET id_usuario = $1 WHERE id_obra = $2", [
+        usuario_id,
+        id_obra,
+      ]);
     }
 
     if (autor) {
       // Remove todos os autores existentes para a obra
-      await pool.query("DELETE FROM obras_autores WHERE id_obra = $1", [id_obra]);
+      await pool.query("DELETE FROM obras_autores WHERE id_obra = $1", [
+        id_obra,
+      ]);
 
       // Insere os novos autores para a obra
       for (const autor_nome of autor) {
         const AutorFormatado = primeiraLetraMaiuscula(autor_nome);
-        const verificaAutor = await pool.query("SELECT id_autor FROM autor WHERE nome = $1", [AutorFormatado]);
+        const verificaAutor = await pool.query(
+          "SELECT id_autor FROM autor WHERE nome = $1",
+          [AutorFormatado]
+        );
 
         if (verificaAutor.rows.length > 0) {
           const autor_id = verificaAutor.rows[0].id_autor;
-          await pool.query("INSERT INTO obras_autores (id_obra, id_autor) VALUES ($1, $2)", [id_obra, autor_id]);
+          await pool.query(
+            "INSERT INTO obras_autores (id_obra, id_autor) VALUES ($1, $2)",
+            [id_obra, autor_id]
+          );
         } else {
           // Lida com o caso em que o autor não existe
-          return res.status(400).json({ Mensagem: "Autor não encontrado.", status: 400 });
+          return res
+            .status(400)
+            .json({ Mensagem: "Autor não encontrado.", status: 400 });
         }
       }
     }
 
     if (assunto) {
       // Remove todos os assuntos existentes para a obra
-      await pool.query("DELETE FROM obras_assuntos WHERE id_obra = $1", [id_obra]);
+      await pool.query("DELETE FROM obras_assuntos WHERE id_obra = $1", [
+        id_obra,
+      ]);
 
       // Insere os novos assuntos para a obra
       for (const assunto_nome of assunto) {
         const AssuntoFormatado = primeiraLetraMaiuscula(assunto_nome);
-        const verificaAssunto = await pool.query("SELECT id_assunto FROM assunto WHERE nome = $1", [AssuntoFormatado]);
+        const verificaAssunto = await pool.query(
+          "SELECT id_assunto FROM assunto WHERE nome = $1",
+          [AssuntoFormatado]
+        );
 
         if (verificaAssunto.rows.length > 0) {
           const assunto_id = verificaAssunto.rows[0].id_assunto;
-          await pool.query("INSERT INTO obras_assuntos (id_obra, id_assunto) VALUES ($1, $2)", [id_obra, assunto_id]);
+          await pool.query(
+            "INSERT INTO obras_assuntos (id_obra, id_assunto) VALUES ($1, $2)",
+            [id_obra, assunto_id]
+          );
         } else {
           // Lida com o caso em que o assunto não existe
-          return res.status(400).json({ Mensagem: "Assunto não encontrado.", status: 400 });
+          return res
+            .status(400)
+            .json({ Mensagem: "Assunto não encontrado.", status: 400 });
         }
       }
     }
@@ -846,14 +900,29 @@ const EditarObra = async (req, res) => {
       // Insere os novos links para a obra
       for (const link_nome of link) {
         const LinkFormatado = link_nome.trim();
-        const verificaLink = await pool.query("SELECT id_link FROM link WHERE link = $1", [LinkFormatado]);
+        const verificaLink = await pool.query(
+          "SELECT id_link FROM link WHERE link = $1",
+          [LinkFormatado]
+        );
 
         if (verificaLink.rows.length > 0) {
           const link_id = verificaLink.rows[0].id_link;
-          await pool.query("INSERT INTO obras_links (id_obra, id_link) VALUES ($1, $2)", [id_obra, link_id]);
+          await pool.query(
+            "INSERT INTO obras_links (id_obra, id_link) VALUES ($1, $2)",
+            [id_obra, link_id]
+          );
         } else {
           // Lida com o caso em que o link não existe
-          return res.status(400).json({ Mensagem: "Link não encontrado.", status: 400 });
+          const CadastroLink = await pool.query(
+            `INSERT INTO link (link) VALUES ($1) RETURNING id_link`,
+            [LinkFormatado]
+          );
+
+          const link_id = CadastroLink.rows[0].id_link;
+          await pool.query(
+            "INSERT INTO obras_links (id_obra, id_link) VALUES ($1, $2)",
+            [id_obra, link_id]
+          );
         }
       }
     }
@@ -865,21 +934,38 @@ const EditarObra = async (req, res) => {
       // Insere as novas imagens para a obra
       for (const img_nome of img) {
         const ImgFormatada = img_nome.trim();
-        const verificaImg = await pool.query("SELECT id_img FROM img WHERE link = $1", [ImgFormatada]);
+        const verificaImg = await pool.query(
+          "SELECT id_img FROM img WHERE link = $1",
+          [ImgFormatada]
+        );
 
         if (verificaImg.rows.length > 0) {
           const img_id = verificaImg.rows[0].id_img;
-          await pool.query("INSERT INTO obras_imgs (id_obra, id_img) VALUES ($1, $2)", [id_obra, img_id]);
+          await pool.query(
+            "INSERT INTO obras_imgs (id_obra, id_img) VALUES ($1, $2)",
+            [id_obra, img_id]
+          );
         } else {
           // Lida com o caso em que a imagem não existe
-          return res.status(400).json({ Mensagem: "Imagem não encontrada.", status: 400 });
+          const CadastroImg = await pool.query(
+            `INSERT INTO img (link) VALUES ($1) RETURNING id_img`,
+            [ImgFormatada]
+          );
+
+          const img_id = CadastroImg.rows[0].id_img;
+          await pool.query(
+            "INSERT INTO obras_imgs (id_obra, id_img) VALUES ($1, $2)",
+            [id_obra, img_id]
+          );
         }
       }
     }
 
     return res.status(200).json({ Mensagem: "Obra atualizada com sucesso." });
   } catch (erro) {
-    return res.status(500).json({ Mensagem: "Ocorreu um erro interno no servidor." });
+    return res
+      .status(500)
+      .json({ Mensagem: "Ocorreu um erro interno no servidor." });
   }
 };
 
@@ -899,5 +985,5 @@ export {
   ObrasMaisAntigas,
   CadastrarObra,
   ExcluirObra,
-  EditarObra
+  EditarObra,
 };

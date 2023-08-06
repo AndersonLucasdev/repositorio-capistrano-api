@@ -55,17 +55,13 @@ import {
 import {
   MostrarLinkID,
   MostrarTodoslinks,
-  CadastrarLink,
-  ExcluirLink,
-  EditarLink,
+  CadastrarLink
 } from "../controllers/controllersLink.js";
 
 import {
   MostrarImgID,
   MostrarTodosimg,
-  CadastrarImagem,
-  ExcluirImg,
-  EditarImg,
+  CadastrarImagem
 } from "../controllers/controllersImg.js";
 
 const route = Router();
@@ -129,14 +125,12 @@ route.patch("/editar_assunto", EditarAssunto);
 route.get("/mostrar_linkid/:id", MostrarLinkID);
 route.get("/msotrar_todos_links", MostrarTodoslinks);
 route.post("/cadastrar_link", CadastrarLink);
-route.delete("/remover_link", ExcluirLink);
-route.patch("/editar_link", EditarLink);
+
 
 // img
 route.get("/mostrar_imgid/:id", MostrarImgID);
 route.get("/msotrar_todos_imgs", MostrarTodosimg);
 route.post("/cadastrar_img", CadastrarImagem);
-route.delete("/remover_img", ExcluirImg);
-route.patch("/editar_img", EditarImg);
+
 
 export default route;
