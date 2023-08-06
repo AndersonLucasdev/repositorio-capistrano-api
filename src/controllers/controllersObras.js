@@ -757,18 +757,15 @@ const ExcluirObra = async (req, res) => {
 
 const EditarObra = async (req, res) => {
   try {
-    const { id_obra } = req.params;
-    const { titulo, link, usuario, resumo, descricao, img, data } = req.body;
+    const { titulo, id_obra, link, usuario, resumo, descricao, img, data } = req.body;
 
     if (!titulo && !link && !usuario && !resumo && !descricao && !img && !data) {
       return res.status(400).json({ Mensagem: "Altere pelo menos um campo.", status: 400 });
     }
 
     const TituloFormatado = primeiraLetraMaiuscula(titulo);
-    const linkFormatado = link ? link.trim() : undefined;
     const resumoFormatado = capitalizarEPontuar(resumo);
     const descricaoFormatada = primeiraLetraMaiuscula(descricao);
-    const imgFormatada = img ? img.trim() : undefined;
     const dataFormatada = data ? data.trim() : undefined;
 
     let usuario_id;
@@ -787,20 +784,12 @@ const EditarObra = async (req, res) => {
       await pool.query("UPDATE obra SET titulo = $1 WHERE id_obra = $2", [TituloFormatado, id_obra]);
     }
 
-    if (linkFormatado) {
-      await pool.query("UPDATE obra SET link = $1 WHERE id_obra = $2", [linkFormatado, id_obra]);
-    }
-
     if (resumoFormatado) {
       await pool.query("UPDATE obra SET resumo = $1 WHERE id_obra = $2", [resumoFormatado, id_obra]);
     }
 
     if (descricaoFormatada) {
       await pool.query("UPDATE obra SET descricao = $1 WHERE id_obra = $2", [descricaoFormatada, id_obra]);
-    }
-
-    if (imgFormatada) {
-      await pool.query("UPDATE obra SET img = $1 WHERE id_obra = $2", [imgFormatada, id_obra]);
     }
 
     if (dataFormatada) {
