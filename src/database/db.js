@@ -3,7 +3,7 @@ const { Pool } = pg;
 
 const pool = new Pool({
   connectionString:
-  "postgres://default:lOACJLHI0oX5@ep-noisy-wind-97242483.us-east-1.postgres.vercel-storage.com:5432/verceldb",
+  "postgres://default:bhGF1mnk2jAg@ep-floral-rain-91788934.us-east-1.postgres.vercel-storage.com:5432/verceldb",
   ssl: {
     rejectUnauthorized: false,
     sslmode: "require",
@@ -41,7 +41,7 @@ const createTables = async () => {
       titulo VARCHAR(255),
       resumo TEXT,
       descricao TEXT,
-      data_publi DATE
+      data_publi VARCHAR(255)
     );
     
     CREATE TABLE IF NOT EXISTS obras_links (
