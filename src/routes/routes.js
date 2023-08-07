@@ -92,7 +92,7 @@ route.post("/cadastro_autor", CadastrarAutor);
 route.get("/mostrar_todos_autores", MostrarTodosAutores);
 route.get("/mostrar_autor:id", MostrarAutorID);
 route.patch("/editar_autor", EditarAutor);
-route.delete("/excluir_autor", ExcluirAutor)
+route.delete("/excluir_autor:id", ExcluirAutor)
 
 // Usuários
 route.get("/mostrar_todos_usuarios", MostrarTodosUsuarios);
