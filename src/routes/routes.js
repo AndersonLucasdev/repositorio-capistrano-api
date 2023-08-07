@@ -9,6 +9,7 @@ import {
   MostrarTodasobra,
   MostrarTodasobraCapistrano,
   MostrarTodasobraOutrosAutores,
+  MostrarObrasComNomeEIdUsuario,
   ObrasOrdemAlfabetica,
   MostrarObraPeloIDUsuario,
   MostrarObrasPeloIDAutor,
@@ -82,7 +83,7 @@ route.post("/pesquisar_nome_usuario", MostrarPeloNomeUsuario);
 route.post("/mostrar_todas_obras_assunto", MostrarTodasObrasPorAssunto);
 route.get("/mostrar_obras_id_autor", MostrarObrasPeloIDAutor);
 route.get("/mostrar_obras_id_usuario", MostrarObraPeloIDUsuario);
-
+route.get("/mostrar_obras_com_nome_e_id_usuario", MostrarObrasComNomeEIdUsuario)
 route.post("/cadastro_obras", CadastrarObra);
 
 route.delete("/excluir_obra/:id", ExcluirObra);
