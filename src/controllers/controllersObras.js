@@ -41,6 +41,42 @@ ORDER BY o.id_obra;
   }
 };
 
+const MostrarTodasObrasAleatorio = async (req, res) => {
+  try {
+    const obras = await pool.query(`
+    SELECT 
+    o.id_obra, o.titulo, o.data_publi, o.resumo, u.nome as usuario, 
+    string_agg(DISTINCT li.link, ', ') as links, 
+    string_agg(DISTINCT im.link, ', ') as imgs, 
+    string_agg(DISTINCT ass.nome, ', ') as assuntos, 
+    string_agg(DISTINCT au.nome, ', ') as autores
+FROM obra o
+INNER JOIN obras_autores oa ON o.id_obra = oa.id_obra
+INNER JOIN autor au ON au.id_autor = oa.id_autor
+INNER JOIN usuario u ON u.id_usuario = o.id_usuario
+INNER JOIN obras_assuntos oas ON oas.id_obra = o.id_obra
+INNER JOIN assunto ass ON ass.id_assunto = oas.id_assunto
+INNER JOIN obras_links ol ON ol.id_obra = o.id_obra
+INNER JOIN link li ON li.id_link = ol.id_link
+INNER JOIN obras_imgs oi ON oi.id_obra = o.id_obra
+INNER JOIN img im ON im.id_img = oi.id_img
+GROUP BY o.id_obra, u.nome, o.titulo, o.data_publi, o.resumo, ass.nome, li.link, im.link, au.nome
+ORDER BY RANDOM()
+      `);
+
+    console.log(obras);
+    if (obras.rows.length === 0) {
+      res
+        .status(200)
+        .json({ Mensagem: "Não há obra cadastrados.", status: 400 });
+    }
+
+    res.status(200).json(obras.rows);
+  } catch (erro) {
+    res.status(500).json({ Mensagem: erro.Mensagem });
+  }
+}
+
 const MostrarObraPeloID = async (req, res) => {
   const { id } = req.params;
   try {
