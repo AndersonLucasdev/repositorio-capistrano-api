@@ -1015,6 +1015,7 @@ export {
   MostrarObraPeloID,
   MostrarPeloNomeAutor,
   MostrarPeloNomeObra,
+  MostrarTodasObrasAleatorio,
   MostrarPeloNomeUsuario,
   MostrarTodasObrasPorAssunto,
   MostrarTodasobra,

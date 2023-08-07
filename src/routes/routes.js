@@ -5,6 +5,7 @@ import {
   MostrarPeloNomeObra,
   MostrarPeloNomeUsuario,
   MostrarTodasObrasPorAssunto,
+  MostrarTodasObrasAleatorio,
   MostrarTodasobra,
   MostrarTodasobraCapistrano,
   MostrarTodasobraOutrosAutores,
@@ -70,6 +71,7 @@ const route = Router();
 route.get("/mostrar_todas_obras", MostrarTodasobra);
 route.get("/mostrar_todas_capistrano", MostrarTodasobraCapistrano);
 route.get("/mostrar_outras_obras", MostrarTodasobraOutrosAutores);
+route.get("/mostrar_obras_aleatorio", MostrarTodasObrasAleatorio)
 route.get("/mostrar_obraid/:id", MostrarObraPeloID);
 route.get("/mostrar_obras_recentes", ObrasMaisRecentes);
 route.get("/mostrar_ordem_alfabetica", ObrasOrdemAlfabetica);
