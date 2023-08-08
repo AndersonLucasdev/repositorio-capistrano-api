@@ -850,7 +850,7 @@ const ExcluirObra = async (req, res) => {
 
 const EditarObra = async (req, res) => {
   try {
-    const { titulo, id_obra, link, usuario, autor, resumo, descricao, img, data } =
+    const { titulo, id_obra, link, usuario, autor, assunto, resumo, descricao, img, data } =
       req.body;
 
     if (
@@ -858,6 +858,7 @@ const EditarObra = async (req, res) => {
       !link &&
       !usuario &&
       !autor &&
+      !assunto &&
       !resumo &&
       !descricao &&
       !img &&
@@ -923,35 +924,6 @@ const EditarObra = async (req, res) => {
         usuario_id,
         id_obra,
       ]);
-    }
-
-    if (autor) {
-      // Remove todos os autores existentes para a obra
-      await pool.query("DELETE FROM obras_autores WHERE id_obra = $1", [
-        id_obra,
-      ]);
-
-      // Insere os novos autores para a obra
-      for (const autor_nome of autor) {
-        const AutorFormatado = primeiraLetraMaiuscula(autor_nome);
-        const verificaAutor = await pool.query(
-          "SELECT id_autor FROM autor WHERE nome = $1",
-          [AutorFormatado]
-        );
-
-        if (verificaAutor.rows.length > 0) {
-          const autor_id = verificaAutor.rows[0].id_autor;
-          await pool.query(
-            "INSERT INTO obras_autores (id_obra, id_autor) VALUES ($1, $2)",
-            [id_obra, autor_id]
-          );
-        } else {
-          // Lida com o caso em que o autor não existe
-          return res
-            .status(400)
-            .json({ Mensagem: "Autor não encontrado.", status: 400 });
-        }
-      }
     }
 
     if (autor) {
