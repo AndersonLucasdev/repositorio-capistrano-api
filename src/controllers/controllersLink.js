@@ -7,8 +7,6 @@ const MostrarTodoslinks = async (req, res) => {
     SELECT 
     *
     FROM link
-    
-    order by id_link
         `);
 
     if (links.rows.length === 0) {

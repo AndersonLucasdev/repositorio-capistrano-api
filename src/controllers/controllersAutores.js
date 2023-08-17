@@ -7,8 +7,6 @@ const MostrarTodosAutores = async (req, res) => {
     SELECT 
     *
     FROM autor
-    
-    order by id_autor
         `);
 
     if (Autores.rows.length === 0) {

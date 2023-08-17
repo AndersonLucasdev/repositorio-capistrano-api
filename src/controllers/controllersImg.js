@@ -7,8 +7,6 @@ const MostrarTodosimg = async (req, res) => {
     SELECT 
     *
     FROM img
-    
-    order by id_img
         `);
 
     if (imagens.rows.length === 0) {
