@@ -9,7 +9,7 @@ const MostrarTodasobra = async (req, res) => {
   try {
     const obra = await pool.query(`
     SELECT 
-    o.id_obra, o.titulo, o.data_publi, o.resumo, u.nome as usuario, 
+    o.id_obra, o.titulo, o.data_publi, o.data_criacao o.resumo, u.nome as usuario, 
     string_agg(DISTINCT li.link, ', ') as links, 
     string_agg(DISTINCT im.link, ', ') as imgs, 
     string_agg(DISTINCT ass.nome, ', ') as assuntos, 
@@ -24,7 +24,7 @@ INNER JOIN obras_links ol ON ol.id_obra = o.id_obra
 INNER JOIN link li ON li.id_link = ol.id_link
 INNER JOIN obras_imgs oi ON oi.id_obra = o.id_obra
 INNER JOIN img im ON im.id_img = oi.id_img
-GROUP BY o.id_obra, u.nome, o.titulo, o.data_publi, o.resumo, ass.nome, li.link, im.link, au.nome
+GROUP BY o.id_obra, u.nome, o.titulo, o.data_publi, o.data_criacao, o.resumo, ass.nome, li.link, im.link, au.nome
 ORDER BY o.id_obra;
       `);
 
@@ -47,7 +47,7 @@ const MostrarObrasComNomeEIdUsuario = async (req, res) => {
   try {
     const obra = await pool.query(`
     SELECT 
-    o.id_obra, o.titulo, o.data_publi, o.resumo, u.nome as usuario, 
+    o.id_obra, o.titulo, o.data_publi, o.data_criacao, o.resumo, u.nome as usuario, 
     string_agg(DISTINCT li.link, ', ') as links, 
     string_agg(DISTINCT im.link, ', ') as imgs,
     string_agg(DISTINCT ass.nome, ', ') as assuntos, string_agg(au.nome, ', ') as autores
@@ -69,7 +69,7 @@ WHERE
     o.titulo ILIKE '%' || '${titulo}' || '%'
     and o.id_usuario = ${id_usuario}
 GROUP BY 
-    o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_publi, ass.nome, li.link, im.link, au.nome
+    o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_publi, ass.nome, li.link, im.link, o.data_criacao, au.nome
 ORDER BY 
     o.id_obra;
     `);
@@ -92,7 +92,7 @@ const MostrarTodasObrasAleatorio = async (req, res) => {
   try {
     const obras = await pool.query(`
     SELECT 
-    o.id_obra, o.titulo, o.data_publi, o.resumo, u.nome as usuario, 
+    o.id_obra, o.titulo, o.data_publi, o.data_criacao, o.resumo, u.nome as usuario, 
     string_agg(DISTINCT li.link, ', ') as links, 
     string_agg(DISTINCT im.link, ', ') as imgs, 
     string_agg(DISTINCT ass.nome, ', ') as assuntos, 
@@ -107,7 +107,7 @@ INNER JOIN obras_links ol ON ol.id_obra = o.id_obra
 INNER JOIN link li ON li.id_link = ol.id_link
 INNER JOIN obras_imgs oi ON oi.id_obra = o.id_obra
 INNER JOIN img im ON im.id_img = oi.id_img
-GROUP BY o.id_obra, u.nome, o.titulo, o.data_publi, o.resumo, ass.nome, li.link, im.link, au.nome
+GROUP BY o.id_obra, u.nome, o.titulo, o.data_publi, o.resumo, ass.nome, o.data_criacao, li.link, im.link, au.nome
 ORDER BY RANDOM()
       `);
 
@@ -131,6 +131,7 @@ const MostrarObraPeloID = async (req, res) => {
        SELECT 
     o.titulo,
     o.data_publi,
+    o.data_criacao,
     o.resumo,
     u.nome as usuario,  
     string_agg(DISTINCT li.link, ', ') as links, 
@@ -163,6 +164,7 @@ GROUP BY
     o.link,
     o.img, 
     o.data_publi, 
+    o.data_criacao,
     ass.nome, li.link, im.link,
     au.nome
     ;`);
@@ -186,7 +188,7 @@ const MostrarTodasObrasPorAssunto = async (req, res) => {
     const obras = await pool.query(
       `
     SELECT 
-          o.id_obra, o.titulo, o.data_publi, o.resumo, u.nome as usuario, 
+          o.id_obra, o.titulo, o.data_publi, o.data_criacao, o.resumo, u.nome as usuario, 
           string_agg(DISTINCT li.link, ', ') as links, string_agg(DISTINCT im.link, ', ') as imgs,
         string_agg(DISTINCT ass.nome, ', ') as assuntos, string_agg(DISTINCT au.nome, ', ') as autores
         FROM obra o
@@ -200,7 +202,7 @@ INNER JOIN assunto ass ON ass.id_assunto = oas.id_assunto
         INNER JOIN obras_imgs oi ON oi.id_obra = o.id_obra
         INNER JOIN img im ON im.id_img = oi.id_img
         where assunto = $1
-        GROUP BY o.id_obra, u.nome, o.titulo, o.resumo, o.img, o.data_publi, ass.nome, li.link, im.link, au.nome
+        GROUP BY o.id_obra, u.nome, o.titulo, o.resumo, o.img, o.data_criacao, o.data_publi, ass.nome, li.link, im.link, au.nome
         ORDER BY o.id_obra
         `,
       [assunto]
@@ -215,7 +217,7 @@ const ObrasOrdemAlfabetica = async (req, res) => {
   try {
     obras = await pool.query(`
       SELECT 
-          o.id_obra, o.titulo, o.data_publi, o.resumo, u.nome as usuario, 
+          o.id_obra, o.titulo, o.data_criacao, o.data_publi, o.resumo, u.nome as usuario, 
           string_agg(DISTINCT li.link, ', ') as links, 
           string_agg(DISTINCT im.link, ', ') as imgs,
           string_agg(DISTINCT ass.nome, ', ') as assuntos,string_agg(au.nome, ', ') as autores
@@ -237,7 +239,7 @@ const ObrasOrdemAlfabetica = async (req, res) => {
           o.data_publi IS NOT NULL
 
       GROUP BY 
-          o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_publi, ass.nome, li.link, im.link, au.nome
+          o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_criacao, o.data_publi, ass.nome, li.link, im.link, au.nome
       ORDER BY 
           o.titulo;
     `);
@@ -259,7 +261,7 @@ const ObrasMaisRecentes = async (req, res) => {
   try {
     const obras = await pool.query(`
     SELECT 
-        o.id_obra, o.titulo, o.data_publi, o.resumo, u.nome as usuario, 
+        o.id_obra, o.titulo, o.data_criacao, o.data_publi, o.resumo, u.nome as usuario, 
         string_agg(DISTINCT li.link, ', ') as links, 
         string_agg(DISTINCT im.link, ', ') as imgs,
         string_agg(DISTINCT ass.nome, ', ') as assuntos, string_agg(au.nome, ', ') as autores
@@ -278,7 +280,7 @@ const ObrasMaisRecentes = async (req, res) => {
         INNER JOIN obras_imgs oi ON oi.id_obra = o.id_obra
         INNER JOIN img im ON im.id_img = oi.id_img
     GROUP BY 
-        o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_publi, ass.nome, li.link, im.link, au.nome
+        o.id_obra, o.titulo, o.resumo, u.nome, o.data_criacao, o.img, o.data_publi, ass.nome, li.link, im.link, au.nome
     ORDER BY 
         o.data_publi DESC;
   `);
@@ -296,11 +298,95 @@ const ObrasMaisRecentes = async (req, res) => {
   }
 };
 
+const ObrasCriadasMaisAntigas = async (req, res) => {
+  try {
+    const obras = await pool.query(`
+      SELECT 
+          o.id_obra, o.titulo, o.data_criacao, o.data_publi, o.resumo, u.nome as usuario,
+          string_agg(DISTINCT li.link, ', ') as links, 
+          string_agg(DISTINCT im.link, ', ') as imgs, 
+          string_agg(DISTINCT ass.nome, ', ') as assuntos, string_agg(au.nome, ', ') as autores
+      FROM 
+          obra o
+      INNER JOIN 
+          obras_autores oa ON o.id_obra = oa.id_obra
+      INNER JOIN 
+          autor au ON au.id_autor = oa.id_autor
+      INNER JOIN 
+          usuario u ON u.id_usuario = o.id_usuario
+          INNER JOIN obras_assuntos oas ON o.id_obra = oas.id_obra
+          INNER JOIN assunto ass ON ass.id_assunto = oas.id_assunto
+          INNER JOIN obras_links ol ON ol.id_obra = o.id_obra
+        INNER JOIN link li ON li.id_link = ol.id_link
+        INNER JOIN obras_imgs oi ON oi.id_obra = o.id_obra
+        INNER JOIN img im ON im.id_img = oi.id_img
+      WHERE 
+          o.data_criacao IS NOT NULL
+      GROUP BY 
+          o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_criacao, o.data_publi, ass.nome, li.link, im.link, au.nome
+      ORDER BY 
+        o.data_criacao ASC;
+    `);
+    if (obras.rows.length === 0) {
+      return res
+        .status(200)
+        .json({ mensagem: "Obra(s) não encontrado(s)", status: 400 });
+    }
+
+    return res.status(200).json(obras.rows);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ mensagem: "Ocorreu um erro interno no servidor" });
+  }
+}
+
+const ObrasCriadasMaisRecentes = async (req, res) => {
+  try {
+    const obras = await pool.query(`
+    SELECT 
+        o.id_obra, o.titulo, o.data_criacao, o.data_publi, o.resumo, u.nome as usuario, 
+        string_agg(DISTINCT li.link, ', ') as links, 
+        string_agg(DISTINCT im.link, ', ') as imgs,
+        string_agg(DISTINCT ass.nome, ', ') as assuntos, string_agg(au.nome, ', ') as autores
+    FROM 
+        obra o
+    INNER JOIN 
+        obras_autores oa ON o.id_obra = oa.id_obra
+    INNER JOIN 
+        autor au ON au.id_autor = oa.id_autor
+    INNER JOIN 
+        usuario u ON u.id_usuario = o.id_usuario
+        INNER JOIN obras_assuntos oas ON o.id_obra = oas.id_obra
+        INNER JOIN assunto ass ON ass.id_assunto = oas.id_assunto
+        INNER JOIN obras_links ol ON ol.id_obra = o.id_obra
+        INNER JOIN link li ON li.id_link = ol.id_link
+        INNER JOIN obras_imgs oi ON oi.id_obra = o.id_obra
+        INNER JOIN img im ON im.id_img = oi.id_img
+    GROUP BY 
+        o.id_obra, o.titulo, o.resumo, u.nome, o.data_criacao, o.img, o.data_publi, ass.nome, li.link, im.link, au.nome
+    ORDER BY 
+        o.data_criacao DESC;
+  `);
+    if (obras.rows.length === 0) {
+      return res
+        .status(200)
+        .json({ mensagem: "Obra(s) não encontrado(s)", status: 400 });
+    }
+
+    return res.status(200).json(obras.rows);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ mensagem: "Ocorreu um erro interno no servidor" });
+  }
+}
+
 const ObrasMaisAntigas = async (req, res) => {
   try {
     const obras = await pool.query(`
       SELECT 
-          o.id_obra, o.titulo, o.data_publi, o.resumo, u.nome as usuario,
+          o.id_obra, o.titulo, o.data_criacao, o.data_publi, o.resumo, u.nome as usuario,
           string_agg(DISTINCT li.link, ', ') as links, 
           string_agg(DISTINCT im.link, ', ') as imgs, 
           string_agg(DISTINCT ass.nome, ', ') as assuntos, string_agg(au.nome, ', ') as autores
@@ -321,7 +407,7 @@ const ObrasMaisAntigas = async (req, res) => {
       WHERE 
           o.data_publi IS NOT NULL
       GROUP BY 
-          o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_publi, ass.nome, li.link, im.link, au.nome
+          o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_criacao, o.data_publi, ass.nome, li.link, im.link, au.nome
       ORDER BY 
           o.data_publi ASC;
     `);
@@ -345,7 +431,7 @@ const MostrarPeloNomeObra = async (req, res) => {
   try {
     const obra = await pool.query(`
     SELECT 
-    o.id_obra, o.titulo, o.data_publi, o.resumo, u.nome as usuario, 
+    o.id_obra, o.titulo, o.data_criacao, o.data_publi, o.resumo, u.nome as usuario, 
     string_agg(DISTINCT li.link, ', ') as links, 
     string_agg(DISTINCT im.link, ', ') as imgs,
     string_agg(DISTINCT ass.nome, ', ') as assuntos, string_agg(au.nome, ', ') as autores
@@ -366,7 +452,7 @@ INNER JOIN
 WHERE 
     o.titulo ILIKE '%' || '${titulo}' || '%'
 GROUP BY 
-    o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_publi, ass.nome, li.link, im.link, au.nome
+    o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_criacao, o.data_publi, ass.nome, li.link, im.link, au.nome
 ORDER BY 
     o.id_obra;
     `);
@@ -391,7 +477,7 @@ const MostrarPeloNomeAutor = async (req, res) => {
   try {
     const obra = await pool.query(`
     SELECT 
-        o.id_obra, o.titulo, o.resumo, o.data_publi, u.nome as usuario, 
+        o.id_obra, o.data_criacao, o.titulo, o.resumo, o.data_publi, u.nome as usuario, 
         string_agg(DISTINCT li.link, ', ') as links, 
         string_agg(DISTINCT im.link, ', ') as imgs,
         string_agg(DISTINCT ass.nome, ', ') as assuntos, string_agg(DISTINCT au.nome, ', ') as autores
@@ -407,7 +493,7 @@ INNER JOIN assunto ass ON ass.id_assunto = oas.id_assunto
         INNER JOIN img im ON im.id_img = oi.id_img
         where au.nome ILIKE '%' || '${nome}' || '%'
         
-        group by o.id_obra, au.nome, o.titulo, o.resumo, u.nome, o.img, o.data_publi, ass.nome, li.link, im.link
+        group by o.id_obra, au.nome, o.titulo, o.resumo, o.data_criacao, u.nome, o.img, o.data_publi, ass.nome, li.link, im.link
         
         order by o.id_obra
     `);
@@ -433,7 +519,7 @@ const MostrarObrasPeloIDAutor = async (req, res) => {
     const obra = await pool.query(
       `
     SELECT 
-        o.id_obra, o.titulo, o.resumo, o.data_publi, u.nome as usuario, 
+        o.id_obra, o.titulo, o.data_criacao, o.resumo, o.data_publi, u.nome as usuario, 
         string_agg(DISTINCT li.link, ', ') as links, 
         string_agg(DISTINCT im.link, ', ') as imgs,
         string_agg(DISTINCT ass.nome, ', ') as assuntos, string_agg(DISTINCT au.nome, ', ') as autores
@@ -449,7 +535,7 @@ INNER JOIN assunto ass ON ass.id_assunto = oas.id_assunto
         INNER JOIN img im ON im.id_img = oi.id_img
         where au.id_autor = $1
         
-        group by o.id_obra, au.nome, o.titulo, o.resumo, u.nome, o.img, o.data_publi, ass.nome, li.link, im.link
+        group by o.id_obra, au.nome, o.titulo, o.resumo, o.data_criacao, u.nome, o.img, o.data_publi, ass.nome, li.link, im.link
         
         order by o.id_obra
     `,
@@ -476,7 +562,7 @@ const MostrarPeloNomeUsuario = async (req, res) => {
   try {
     const obra = await pool.query(`
     SELECT 
-    o.id_obra, o.titulo, o.data_publi, o.resumo, u.nome as usuario, 
+    o.id_obra, o.data_criacao, o.titulo, o.data_publi, o.resumo, u.nome as usuario, 
     string_agg(DISTINCT li.link, ', ') as links, 
     string_agg(DISTINCT im.link, ', ') as imgs,
     string_agg(DISTINCT as.nome, ', ') ass assuntos, string_agg(au.nome, ', ') as autores
@@ -497,7 +583,7 @@ INNER JOIN
 WHERE 
     u.nome ILIKE '%' || '${nome}' || '%'
 GROUP BY 
-    o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_publi, as.nome, li.link, im.link, au.nome
+    o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_criacao, o.data_publi, as.nome, li.link, im.link, au.nome
 ORDER BY 
     o.id_obra;
     `);
@@ -522,7 +608,7 @@ const MostrarObraPeloIDUsuario = async (req, res) => {
     const obra = await pool.query(
       `
     SELECT 
-    o.id_obra, o.titulo, o.data_publi, o.resumo, u.nome as usuario, 
+    o.id_obra, o.titulo, o.data_criacao, o.data_publi, o.resumo, u.nome as usuario, 
     string_agg(DISTINCT li.link, ', ') as links, 
     string_agg(DISTINCT im.link, ', ') as imgs,
     string_agg(DISTINCT as.nome, ', ') ass assuntos, string_agg(au.nome, ', ') as autores
@@ -543,7 +629,7 @@ INNER JOIN
 WHERE 
     u.id_usuario = $1
 GROUP BY 
-    o.id_obra, o.titulo, o.resumo, u.nome, o.img, o.data_publi, as.nome, li.link, im.link, au.nome
+    o.id_obra, o.titulo, o.resumo, u.nome, o.data_criacao, o.img, o.data_publi, as.nome, li.link, im.link, au.nome
 ORDER BY 
     o.id_obra;
     `,
@@ -568,7 +654,7 @@ const MostrarTodasobraCapistrano = async (req, res) => {
   try {
     const obra = await pool.query(`
         SELECT 
-        o.id_obra, o.titulo, o.resumo, o.data_publi, u.nome as usuario,
+        o.id_obra, o.data_criacao, o.titulo, o.resumo, o.data_publi, u.nome as usuario,
         string_agg(DISTINCT li.link, ', ') as links, 
         string_agg(DISTINCT im.link, ', ') as imgs,
         string_agg(DISTINCT ass.nome, ', ') as assuntos, string_agg(DISTINCT au.nome, ', ') as autores
@@ -584,7 +670,7 @@ INNER JOIN assunto ass ON ass.id_assunto = oas.id_assunto
         INNER JOIN img im ON im.id_img = oi.id_img
         where au.nome = 'Capistrano de Abreu'
         
-        group by o.id_obra, au.nome, o.titulo, o.resumo, u.nome, ass.nome, li.link, im.link, au.nome
+        group by o.id_obra, au.nome, o.titulo, o.data_criacao, o.resumo, u.nome, ass.nome, li.link, im.link, au.nome
         
         order by o.id_obra`);
 
@@ -622,7 +708,7 @@ INNER JOIN assunto ass ON ass.id_assunto = oas.id_assunto
         INNER JOIN img im ON im.id_img = oi.id_img
         where au.nome <> 'Capistrano de Abreu'
         
-        group by o.id_obra, au.nome, o.titulo, o.resumo, u.nome, ass.nome, li.link, im.link
+        group by o.id_obra, au.nome, o.data_criacao, o.titulo, o.resumo, u.nome, ass.nome, li.link, im.link
         
         order by o.id_obra`);
 
@@ -647,6 +733,7 @@ const CadastrarObra = async (req, res) => {
     descricao,
     resumo,
     data_publi,
+    data_criacao,
     autor,
     assunto,
     link,
@@ -658,12 +745,14 @@ const CadastrarObra = async (req, res) => {
   const descricaoFormatada = descricao.trim();
   const resumoFormatado = capitalizarEPontuar(resumo).trim();
   const dataFormatada = data_publi.trim();
+  const datacriacaoFormatada = data_criacao.trim()
   try {
     if (
       !TituloFormatado ||
       !descricaoFormatada ||
       !resumoFormatado ||
       !dataFormatada ||
+      !datacriacaoFormatada ||
       !autor ||
       !usuario ||
       !assunto ||
@@ -765,14 +854,16 @@ const CadastrarObra = async (req, res) => {
           titulo,
           resumo,
           descricao,
-          data_publi
-        ) VALUES ($1, $2, $3, $4, $5) RETURNING id_obra`,
+          data_publi,
+          data_criacao
+        ) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id_obra`,
       [
         usuario,
         TituloFormatado,
         resumoFormatado,
         descricaoFormatada,
         dataFormatada,
+        datacriacaoFormatada
       ]
     );
     console.log(CadastroObra);
@@ -850,12 +941,13 @@ const ExcluirObra = async (req, res) => {
 
 const EditarObra = async (req, res) => {
   try {
-    const { titulo, id_obra, link, usuario, autor, assunto, resumo, descricao, img, data } =
+    const { titulo, id_obra, link, usuario, autor, assunto, resumo, descricao, img, data, data_criacao } =
       req.body;
 
     if (
       !titulo &&
       !link &&
+      !data_criacao &&
       !usuario &&
       !autor &&
       !assunto &&
@@ -873,6 +965,7 @@ const EditarObra = async (req, res) => {
     const resumoFormatado = capitalizarEPontuar(resumo);
     const descricaoFormatada = descricao.trim();
     const dataFormatada = data ? data.trim() : undefined;
+    const dataCricaoFormata = data_criacao ? data_criacao.trim() : undefined
 
     let usuario_id;
     const list_usuario_id = [];
@@ -915,6 +1008,13 @@ const EditarObra = async (req, res) => {
         dataFormatada,
         id_obra,
       ]);
+    }
+
+    if (dataCricaoFormata) {
+      await pool.query("Updata obra SET data_criacao = $1 WHERE id_obre = $2", [
+        dataCricaoFormata,
+        id_obra
+      ])
     }
 
     // Atualiza os campos que são listas
@@ -1074,6 +1174,8 @@ export {
   MostrarObrasPeloIDAutor,
   ObrasMaisRecentes,
   ObrasMaisAntigas,
+  ObrasCriadasMaisAntigas,
+  ObrasCriadasMaisRecentes,
   MostrarObrasComNomeEIdUsuario,
   CadastrarObra,
   ExcluirObra,

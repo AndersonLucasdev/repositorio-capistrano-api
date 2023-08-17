@@ -41,7 +41,8 @@ const createTables = async () => {
       titulo VARCHAR(255),
       resumo TEXT,
       descricao TEXT,
-      data_publi VARCHAR(255)
+      data_publi VARCHAR(255),
+      data_criacao VARCHAR(255)
     );
     
     CREATE TABLE IF NOT EXISTS obras_links (

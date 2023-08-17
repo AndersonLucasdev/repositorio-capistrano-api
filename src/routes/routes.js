@@ -3,18 +3,20 @@ import {
   MostrarObraPeloID,
   MostrarPeloNomeAutor,
   MostrarPeloNomeObra,
+  MostrarTodasObrasAleatorio,
   MostrarPeloNomeUsuario,
   MostrarTodasObrasPorAssunto,
-  MostrarTodasObrasAleatorio,
   MostrarTodasobra,
   MostrarTodasobraCapistrano,
   MostrarTodasobraOutrosAutores,
-  MostrarObrasComNomeEIdUsuario,
   ObrasOrdemAlfabetica,
   MostrarObraPeloIDUsuario,
   MostrarObrasPeloIDAutor,
   ObrasMaisRecentes,
   ObrasMaisAntigas,
+  ObrasCriadasMaisAntigas,
+  ObrasCriadasMaisRecentes,
+  MostrarObrasComNomeEIdUsuario,
   CadastrarObra,
   ExcluirObra,
   EditarObra,
@@ -77,6 +79,8 @@ route.get("/mostrar_obraid/:id", MostrarObraPeloID);
 route.get("/mostrar_obras_recentes", ObrasMaisRecentes);
 route.get("/mostrar_ordem_alfabetica", ObrasOrdemAlfabetica);
 route.get("/mostrar_obras_antigas", ObrasMaisAntigas);
+route.get("/mostrar_obras_criadas_antigas", ObrasCriadasMaisAntigas)
+route.get("/mostrar_obras_criadas_recentes", ObrasCriadasMaisRecentes)
 route.post("/pesquisar_nome_obra", MostrarPeloNomeObra);
 route.post("/pesquisar_nome_autor", MostrarPeloNomeAutor);
 route.post("/pesquisar_nome_usuario", MostrarPeloNomeUsuario);
