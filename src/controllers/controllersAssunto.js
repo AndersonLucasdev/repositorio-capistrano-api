@@ -7,8 +7,6 @@ const MostrarTodosAssuntos = async (req, res) => {
     SELECT 
     *
     FROM assunto
-    
-    order by id_assunto
         `);
 
     if (Assuntos.rows.length === 0) {
