@@ -67,6 +67,23 @@ const createTables = async () => {
       nome VARCHAR(255)
     );
     
+    CREATE TABLE IF NOT EXISTS homenagem (
+      id_homenagem SERIAL PRIMARY KEY,
+      nome VARCHAR(255),
+      data_criacao VARCHAR(255)
+    )
+
+    CREATE TABLE IF NOT EXISTS instituicao (
+      id_instituicao SERIAL PRIMARY KEY,
+      nome VARCHAR(255)
+    )
+
+    CREATE TABLE IF NOT EXISTS homenagem_instituicao (
+      id_homenagem SERIAL REFERENCES homenagem(id_homenagem),
+      id_instituicao SERIAL REFERENCES instituicao(id_insituicao),
+      PRIMARY KET (id_homenagem, id_instituicao)
+    )
+
     CREATE TABLE IF NOT EXISTS obras_assuntos (
       id_assunto SERIAL REFERENCES assunto(id_assunto),
       id_obra SERIAL REFERENCES obra(id_obra),
