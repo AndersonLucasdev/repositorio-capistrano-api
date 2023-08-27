@@ -118,7 +118,7 @@ const EditarInstituicao = async (req, res) => {
 
     const tratamentoNovoNome = primeiraLetraMaiuscula(novo_nome);
 
-    await pool.query("UPDATE autor SET nome = $1 WHERE id_instituicao = $2", [
+    await pool.query("UPDATE instituicao SET nome = $1 WHERE id_instituicao = $2", [
       tratamentoNovoNome,
       id_instituicao,
     ]);
