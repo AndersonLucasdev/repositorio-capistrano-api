@@ -59,14 +59,22 @@ import {
 import {
   MostrarLinkID,
   MostrarTodoslinks,
-  CadastrarLink
+  CadastrarLink,
 } from "../controllers/controllersLink.js";
 
 import {
   MostrarImgID,
   MostrarTodosimg,
-  CadastrarImagem
+  CadastrarImagem,
 } from "../controllers/controllersImg.js";
+
+import {
+  MostrarInstituicaoID,
+  MostrarTodasInstituicoes,
+  CadastrarInstituicao,
+  EditarInstituicao,
+  ExcluirInstituicao,
+} from "../controllers/controllersInstituicoes.js";
 
 const route = Router();
 
@@ -74,20 +82,20 @@ const route = Router();
 route.get("/mostrar_todas_obras", MostrarTodasobra);
 route.get("/mostrar_todas_capistrano", MostrarTodasobraCapistrano);
 route.get("/mostrar_outras_obras", MostrarTodasobraOutrosAutores);
-route.get("/mostrar_obras_aleatorio", MostrarTodasObrasAleatorio)
+route.get("/mostrar_obras_aleatorio", MostrarTodasObrasAleatorio);
 route.get("/mostrar_obraid/:id", MostrarObraPeloID);
 route.get("/mostrar_obras_recentes", ObrasMaisRecentes);
 route.get("/mostrar_ordem_alfabetica", ObrasOrdemAlfabetica);
 route.get("/mostrar_obras_antigas", ObrasMaisAntigas);
-route.get("/mostrar_obras_criadas_antigas", ObrasCriadasMaisAntigas)
-route.get("/mostrar_obras_criadas_recentes", ObrasCriadasMaisRecentes)
+route.get("/mostrar_obras_criadas_antigas", ObrasCriadasMaisAntigas);
+route.get("/mostrar_obras_criadas_recentes", ObrasCriadasMaisRecentes);
 route.post("/pesquisar_nome_obra", MostrarPeloNomeObra);
 route.post("/pesquisar_nome_autor", MostrarPeloNomeAutor);
 route.post("/pesquisar_nome_usuario", MostrarPeloNomeUsuario);
 route.post("/mostrar_todas_obras_assunto", MostrarTodasObrasPorAssunto);
 route.get("/mostrar_obras_id_autor", MostrarObrasPeloIDAutor);
 route.get("/mostrar_obras_id_usuario", MostrarObraPeloIDUsuario);
-route.get("/mostrar_obras_com_nome_e_id_usuario", MostrarObrasComNomeEIdUsuario)
+route.get("/mostrar_obras_com_nome_e_id_usuario",MostrarObrasComNomeEIdUsuario);
 route.post("/cadastro_obras", CadastrarObra);
 
 route.delete("/excluir_obra/:id", ExcluirObra);
@@ -99,7 +107,7 @@ route.post("/cadastro_autor", CadastrarAutor);
 route.get("/mostrar_todos_autores", MostrarTodosAutores);
 route.get("/mostrar_autor:id", MostrarAutorID);
 route.patch("/editar_autor", EditarAutor);
-route.delete("/excluir_autor:id", ExcluirAutor)
+route.delete("/excluir_autor:id", ExcluirAutor);
 
 // Usuários
 route.get("/mostrar_todos_usuarios", MostrarTodosUsuarios);
@@ -133,11 +141,17 @@ route.get("/mostrar_linkid/:id", MostrarLinkID);
 route.get("/msotrar_todos_links", MostrarTodoslinks);
 route.post("/cadastrar_link", CadastrarLink);
 
-
 // img
 route.get("/mostrar_imgid/:id", MostrarImgID);
 route.get("/msotrar_todos_imgs", MostrarTodosimg);
 route.post("/cadastrar_img", CadastrarImagem);
+
+// instituicao
+route.get("/mostrar_instituicoes", MostrarTodasInstituicoes)
+route.get("/mostrar_instituicaoid/:id", MostrarInstituicaoID)
+route.post("/cadastrar_instituicao", CadastrarInstituicao)
+route.delete("/deletar_instituicao/:id", ExcluirInstituicao)
+route.patch("/editar_instituicao", EditarInstituicao)
 
 
 export default route;
