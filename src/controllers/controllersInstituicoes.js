@@ -123,7 +123,9 @@ const EditarInstituicao = async (req, res) => {
       id_instituicao,
     ]);
 
-    return res.status(200).json({ Mensagem: "Instituição editada com sucesso." });
+    return res
+      .status(200)
+      .json({ Mensagem: "Instituição editada com sucesso." });
   } catch (erro) {
     return res
       .status(500)
@@ -131,7 +133,10 @@ const EditarInstituicao = async (req, res) => {
   }
 };
 
-
 export {
-    MostrarInstituicaoID, MostrarTodasInstituicoes, CadastrarInstituicao, EditarInstituicao, ExcluirInstituicao
-}
+  MostrarInstituicaoID,
+  MostrarTodasInstituicoes,
+  CadastrarInstituicao,
+  EditarInstituicao,
+  ExcluirInstituicao,
+};

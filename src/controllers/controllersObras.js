@@ -32,7 +32,7 @@ ORDER BY o.id_obra;
     if (obra.rows.length === 0) {
       res
         .status(200)
-        .json({ Mensagem: "Não há obra cadastrados.", status: 400 });
+        .json({ Mensagem: "Não há obra(s) cadastrada(s).", status: 400 });
     }
 
     res.status(200).json(obra.rows);
@@ -86,7 +86,7 @@ ORDER BY
       .status(500)
       .json({ mensagem: "Ocorreu um erro interno no servidor" });
   }
-}
+};
 
 const MostrarTodasObrasAleatorio = async (req, res) => {
   try {
@@ -122,7 +122,7 @@ ORDER BY RANDOM()
   } catch (erro) {
     res.status(500).json({ Mensagem: erro.Mensagem });
   }
-}
+};
 
 const MostrarObraPeloID = async (req, res) => {
   const { id } = req.params;
@@ -207,7 +207,7 @@ INNER JOIN assunto ass ON ass.id_assunto = oas.id_assunto
         `,
       [assunto]
     );
-    res.status(200).json(obras.rows[0]);
+    res.status(200).json(obras.rows);
   } catch (erro) {
     return res.status(500).json({ Message: erro.Message });
   }
@@ -339,7 +339,7 @@ const ObrasCriadasMaisAntigas = async (req, res) => {
       .status(500)
       .json({ mensagem: "Ocorreu um erro interno no servidor" });
   }
-}
+};
 
 const ObrasCriadasMaisRecentes = async (req, res) => {
   try {
@@ -380,7 +380,7 @@ const ObrasCriadasMaisRecentes = async (req, res) => {
       .status(500)
       .json({ mensagem: "Ocorreu um erro interno no servidor" });
   }
-}
+};
 
 const ObrasMaisAntigas = async (req, res) => {
   try {
@@ -745,7 +745,7 @@ const CadastrarObra = async (req, res) => {
   const descricaoFormatada = descricao.trim();
   const resumoFormatado = capitalizarEPontuar(resumo).trim();
   const dataFormatada = data_publi.trim();
-  const datacriacaoFormatada = data_criacao.trim()
+  const datacriacaoFormatada = data_criacao.trim();
   try {
     if (
       !TituloFormatado ||
@@ -762,6 +762,9 @@ const CadastrarObra = async (req, res) => {
       return res
         .status(200) // Código de status corrigido
         .json({ Mensagem: "Há campo(s) vazio(s).", status: 400 });
+    }
+    if (data_criacao.length != 8) {
+      return res.status(200).json({ Mensagem: "Data Inválida.", status: 400 });
     }
 
     // Verifica se os autores existem
@@ -863,7 +866,7 @@ const CadastrarObra = async (req, res) => {
         resumoFormatado,
         descricaoFormatada,
         dataFormatada,
-        datacriacaoFormatada
+        datacriacaoFormatada,
       ]
     );
     console.log(CadastroObra);
@@ -941,8 +944,19 @@ const ExcluirObra = async (req, res) => {
 
 const EditarObra = async (req, res) => {
   try {
-    const { titulo, id_obra, link, usuario, autor, assunto, resumo, descricao, img, data, data_criacao } =
-      req.body;
+    const {
+      titulo,
+      id_obra,
+      link,
+      usuario,
+      autor,
+      assunto,
+      resumo,
+      descricao,
+      img,
+      data,
+      data_criacao,
+    } = req.body;
 
     if (
       !titulo &&
@@ -965,21 +979,7 @@ const EditarObra = async (req, res) => {
     const resumoFormatado = capitalizarEPontuar(resumo);
     const descricaoFormatada = descricao.trim();
     const dataFormatada = data ? data.trim() : undefined;
-    const dataCricaoFormata = data_criacao ? data_criacao.trim() : undefined
-
-    let usuario_id;
-    const list_usuario_id = [];
-
-    for (let i = 0; i < usuario.length; i++) {
-      const usuario_nome = usuario[i];
-      const usuarioFormatado = primeiraLetraMaiuscula(usuario_nome);
-      const verificaUsuario = await pool.query(
-        "SELECT id_usuario FROM usuario WHERE nome = $1",
-        [usuarioFormatado]
-      );
-      usuario_id = verificaUsuario.rows[0].id_usuario;
-      list_usuario_id.push(usuario_id);
-    }
+    const dataCricaoFormata = data_criacao ? data_criacao.trim() : undefined;
 
     // Atualiza os campos da tabela obra
     if (TituloFormatado) {
@@ -1011,10 +1011,10 @@ const EditarObra = async (req, res) => {
     }
 
     if (dataCricaoFormata) {
-      await pool.query("Updata obra SET data_criacao = $1 WHERE id_obre = $2", [
+      await pool.query("Updata obra SET data_criacao = $1 WHERE id_obra = $2", [
         dataCricaoFormata,
-        id_obra
-      ])
+        id_obra,
+      ]);
     }
 
     // Atualiza os campos que são listas
@@ -1053,7 +1053,7 @@ const EditarObra = async (req, res) => {
         }
       }
     }
-    
+
     if (assunto) {
       // Remove todos os assuntos existentes para a obra
       await pool.query("DELETE FROM obras_assuntos WHERE id_obra = $1", [
