@@ -96,6 +96,19 @@ const createTables = async () => {
       PRIMARY KEY (id_obra, id_autor)
     );
     
+    CREATE TABLE IF NOT EXISTS registros_acesso (
+      id_registros_acesso SERIAL PRIMARY KEY,
+      endereco_ip VARCHAR(15) NOT NULL,
+      horario_de_entrada TIMESTAMPTZ NOT NULL
+  );
+    
+    CREATE TABLE IF NOT EXISTS visualizacoes_pagina (
+      id_visualizacoes_pagina SERIAL PRIMARY KEY,
+      url_da_pagina TEXT NOT NULL,
+      id_registro_de_acesso INT REFERENCES registros_de_acesso(id_registros_acesso) NOT NULL,
+      horario_de_visualizacao TIMESTAMPTZ NOT NULL
+  );
+
     `);
     client.release();
     console.log("Tabelas e campos criados com sucesso!");
