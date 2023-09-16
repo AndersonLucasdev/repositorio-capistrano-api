@@ -182,6 +182,7 @@ GROUP BY
     o.data_criacao,
     o.resumo,
     u.nome,
+    u.id_usuario,
     o.descricao;
     ;`);
 
