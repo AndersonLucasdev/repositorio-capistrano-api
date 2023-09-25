@@ -1,5 +1,6 @@
-import pool from "../database/db.js";
 import { primeiraLetraMaiuscula } from "./controllersGerais.js";
+import pool from "../database/db.js";
+
 
 const MostrarTodosAutores = async (req, res) => {
   try {

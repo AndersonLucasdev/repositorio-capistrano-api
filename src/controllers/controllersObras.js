@@ -875,9 +875,6 @@ const CadastrarObra = async (req, res) => {
         .status(200) // Código de status corrigido
         .json({ Mensagem: "Há campo(s) vazio(s).", status: 400 });
     }
-    if (data_criacao.length != 10) {
-      return res.status(200).json({ Mensagem: "Data Inválida.", status: 400 });
-    }
 
     // Verifica se os autores existem
     const lista_autores_id = [];
