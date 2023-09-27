@@ -46,6 +46,7 @@ import {
   CadastrarAutor,
   ExcluirAutor,
   EditarAutor,
+  MostrarAutorpeloNome,
 } from "../controllers/controllersAutores.js";
 
 import {
@@ -54,6 +55,7 @@ import {
   CadastrarAssunto,
   ExcluirAssunto,
   EditarAssunto,
+  MostrarAssuntopeloNome,
 } from "../controllers/controllersAssunto.js";
 
 import {
@@ -74,6 +76,7 @@ import {
   CadastrarInstituicao,
   EditarInstituicao,
   ExcluirInstituicao,
+  MostrarInstituicaopeloNome,
 } from "../controllers/controllersInstituicoes.js";
 
 import {
@@ -122,6 +125,7 @@ route.patch("/editar_obra", EditarObra);
 // autor
 route.post("/cadastro_autor", CadastrarAutor);
 route.get("/mostrar_todos_autores", MostrarTodosAutores);
+route.post("/mostrar_autor_nome", MostrarAutorpeloNome);
 route.get("/mostrar_autor:id", MostrarAutorID);
 route.patch("/editar_autor", EditarAutor);
 route.delete("/excluir_autor:id", ExcluirAutor);
@@ -148,6 +152,7 @@ route.delete("/deletar_adm", RemoveAdministrados);
 
 // assuntos
 route.post("/mostrar_assuntos", MostrarTodosAssuntos);
+route.post("/mostrar_assunto_nome", MostrarAssuntopeloNome);
 route.get("/mostrar_assuntoid/:id", MostrarAssuntosID);
 route.post("/cadastrar_assunto", CadastrarAssunto);
 route.delete("/deletar_assunto", ExcluirAssunto);
@@ -165,22 +170,26 @@ route.post("/cadastrar_img", CadastrarImagem);
 
 // instituicao
 route.get("/mostrar_instituicoes", MostrarTodasInstituicoes);
+route.post("mostrar_instituicao_nome", MostrarInstituicaopeloNome);
 route.get("/mostrar_instituicaoid/:id", MostrarInstituicaoID);
 route.post("/cadastrar_instituicao", CadastrarInstituicao);
 route.delete("/deletar_instituicao/:id", ExcluirInstituicao);
 route.patch("/editar_instituicao", EditarInstituicao);
 
 // homenagem
-route.get("/mostrar_homenagens", MostrarTodasHomenagens)
-route.get("/mostrar_homenagem/:id", MostrarHomenagemPeloID)
-route.get("/mostrar_homenagens_aleatorio", MostrarHomenagensAleatorio)
-route.get("/mostrar_homenagens_alfabetico", MostrarHomenagensOrdemAlfabetica)
-route.post("/mostrar_homenagens_instituicoes", MostrarHomenagensPorInstituicoes)
-route.post("mostrar_homenagem_nome", MostrarPeloNomeHomenagem)
-route.get("/mostrar_homenagens_antigas", HomenagensMaisAntigas)
-route.get("/mostrar_homenagens_recentes", HomenagemMaisRecentes)
-route.post("/cadastrar_homenagem", CadastrarHomenagem)
-route.delete("/deletar_homenagem/:id", ExcluirHomenagem)
-route.patch("/editar_homenagemm", EditarHomenagem)
+route.get("/mostrar_homenagens", MostrarTodasHomenagens);
+route.get("/mostrar_homenagem/:id", MostrarHomenagemPeloID);
+route.get("/mostrar_homenagens_aleatorio", MostrarHomenagensAleatorio);
+route.get("/mostrar_homenagens_alfabetico", MostrarHomenagensOrdemAlfabetica);
+route.post(
+  "/mostrar_homenagens_instituicoes",
+  MostrarHomenagensPorInstituicoes
+);
+route.post("mostrar_homenagem_nome", MostrarPeloNomeHomenagem);
+route.get("/mostrar_homenagens_antigas", HomenagensMaisAntigas);
+route.get("/mostrar_homenagens_recentes", HomenagemMaisRecentes);
+route.post("/cadastrar_homenagem", CadastrarHomenagem);
+route.delete("/deletar_homenagem/:id", ExcluirHomenagem);
+route.patch("/editar_homenagemm", EditarHomenagem);
 
 export default route;

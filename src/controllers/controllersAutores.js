@@ -1,7 +1,6 @@
 import { primeiraLetraMaiuscula } from "./controllersGerais.js";
 import pool from "../database/db.js";
 
-
 const MostrarTodosAutores = async (req, res) => {
   try {
     const Autores = await pool.query(`
@@ -16,6 +15,31 @@ const MostrarTodosAutores = async (req, res) => {
         .json({ mensagem: "Autore(s) não encontrado(s)", status: 400 });
     }
     return res.status(200).json(Autores.rows);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ mensagem: "Ocorreu um erro interno no servidor" });
+  }
+};
+
+const MostrarAutorpeloNome = async (req, res) => {
+  try {
+    const { nome } = req.body;
+    const autor = await pool.query(`
+        SELECT 
+        *
+    FROM autor a
+    WHERE 
+    a.nome ILIKE '%' || '${nome}' || '%'
+    `);
+
+    if (autor.rows.length === 0) {
+      return res
+        .status(200)
+        .json({ mensagem: "Autor não encontrado", status: 400 });
+    }
+
+    return res.status(200).json(autor.rows);
   } catch (error) {
     return res
       .status(500)
@@ -123,4 +147,11 @@ const EditarAutor = async (req, res) => {
       .json({ Mensagem: "Ocorreu um erro interno no servidor." });
   }
 };
-export { MostrarTodosAutores, MostrarAutorID, CadastrarAutor, ExcluirAutor, EditarAutor };
+export {
+  MostrarTodosAutores,
+  MostrarAutorID,
+  CadastrarAutor,
+  ExcluirAutor,
+  EditarAutor,
+  MostrarAutorpeloNome,
+};

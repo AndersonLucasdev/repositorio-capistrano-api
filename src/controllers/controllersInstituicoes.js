@@ -22,6 +22,31 @@ const MostrarTodasInstituicoes = async (req, res) => {
   }
 };
 
+const MostrarInstituicaopeloNome = async (req, res) => {
+  try {
+    const { nome } = req.body;
+    const instituicao = await pool.query(`
+        SELECT 
+        *
+    FROM instituicao i
+    WHERE 
+    i.nome ILIKE '%' || '${nome}' || '%'
+    `);
+
+    if (instituicao.rows.length === 0) {
+      return res
+        .status(200)
+        .json({ mensagem: "Sem resultados encontrados!", status: 400 });
+    }
+
+    return res.status(200).json(instituicao.rows);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ mensagem: "Ocorreu um erro interno no servidor" });
+  }
+};
+
 const MostrarInstituicaoID = async (req, res) => {
   try {
     const instituicao = await pool.query(`SELECT 
@@ -118,10 +143,10 @@ const EditarInstituicao = async (req, res) => {
 
     const tratamentoNovoNome = primeiraLetraMaiuscula(novo_nome);
 
-    await pool.query("UPDATE instituicao SET nome = $1 WHERE id_instituicao = $2", [
-      tratamentoNovoNome,
-      id_instituicao,
-    ]);
+    await pool.query(
+      "UPDATE instituicao SET nome = $1 WHERE id_instituicao = $2",
+      [tratamentoNovoNome, id_instituicao]
+    );
 
     return res
       .status(200)
@@ -139,4 +164,5 @@ export {
   CadastrarInstituicao,
   EditarInstituicao,
   ExcluirInstituicao,
+  MostrarInstituicaopeloNome,
 };

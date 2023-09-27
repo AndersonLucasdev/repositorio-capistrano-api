@@ -22,6 +22,31 @@ const MostrarTodosAssuntos = async (req, res) => {
   }
 };
 
+const MostrarAssuntopeloNome = async (req, res) => {
+  try {
+    const { nome } = req.body;
+    const assunto = await pool.query(`
+        SELECT 
+        *
+    FROM assunto a
+    WHERE 
+    a.nome ILIKE '%' || '${nome}' || '%'
+    `);
+
+    if (assunto.rows.length === 0) {
+      return res
+        .status(200)
+        .json({ mensagem: "Assunto(s) não encontrado(s)", status: 400 });
+    }
+
+    return res.status(200).json(assunto.rows);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ mensagem: "Ocorreu um erro interno no servidor" });
+  }
+};
+
 const MostrarAssuntosID = async (req, res) => {
   try {
     const assunto = await pool.query(`SELECT 
@@ -132,5 +157,6 @@ export {
   MostrarAssuntosID,
   CadastrarAssunto,
   ExcluirAssunto,
-  EditarAssunto
+  EditarAssunto,
+  MostrarAssuntopeloNome,
 };
