@@ -103,14 +103,30 @@ const ExcluirAssunto = async (req, res) => {
     [id_assunto]
   );
 
+  const verficaAssuntoEmHomenagem = await pool.query(
+    `
+    select * from homenagens_assuntos where id_assunto = $1`,
+    [id_assunto]
+  );
+
   if (verficaAssuntoEmObra.rows.length === 0) {
     return res
       .status(200)
       .json({ Mensagem: "O assunto possui obras.", status: 400 });
   }
 
+  if (verficaAssuntoEmHomenagem.rows.length === 0) {
+    return res
+      .status(200)
+      .json({ Mensagem: "O assunto possui homenagens.", status: 400 });
+  }
+
   await pool.query(
-    `DELETE FROM obra_assuntos WHERE id_assunto = ${id_assunto}`
+    `DELETE FROM obras_assuntos WHERE id_assunto = ${id_assunto}`
+  );
+
+  await pool.query(
+    `DELETE FROM homenagens_assuntos WHERE id_assunto = ${id_assunto}`
   );
 
   await pool.query(`DELETE FROM assunto where id_assunto = ${id_assunto}`);

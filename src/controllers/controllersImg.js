@@ -76,13 +76,26 @@ const ExcluirImg = async (req, res) => {
     [id_img]
   );
 
+  const verficaImgEmHomenagem = await pool.query(
+    `
+    select * from homenagens_imgs where id_img = $1`,
+    [id_img]
+  );
+
   if (verficaImgEmObra.rows.length === 0) {
     return res
       .status(200)
       .json({ Mensagem: "A imagem possui obras.", status: 400 });
   }
 
-  await pool.query(`DELETE FROM obra_imgs WHERE id_img = ${id_link}`);
+  if (verficaImgEmHomenagem.rows.length === 0) {
+    return res
+      .status(200)
+      .json({ Mensagem: "A imagem possui homenagens.", status: 400 });
+  }
+  
+  await pool.query(`DELETE FROM obras_imgs WHERE id_img = ${id_link}`);
+  await pool.query(`DELETE FROM homenagens_imgs WHERE id_img = ${id_link}`);
 
   await pool.query(`DELETE FROM img where id_img = ${id_img}`);
   return res.status(200).json({ Mensagem: "Imagem excluído com sucesso." });

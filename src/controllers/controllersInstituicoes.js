@@ -166,3 +166,4 @@ export {
   ExcluirInstituicao,
   MostrarInstituicaopeloNome,
 };
+

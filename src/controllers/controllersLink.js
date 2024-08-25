@@ -76,13 +76,26 @@ const ExcluirLink = async (req, res) => {
     [id_link]
   );
 
+  const verficaLinkEmHomenagem = await pool.query(
+    `
+    select * from homenagens_links where id_link = $1`,
+    [id_link]
+  );
+
   if (verficaLinkEmObra.rows.length === 0) {
     return res
       .status(200)
       .json({ Mensagem: "O link possui obras.", status: 400 });
   }
+  if (verficaLinkEmHomenagem.rows.length === 0) {
+    return res
+      .status(200)
+      .json({ Mensagem: "O link possui homenagens.", status: 400 });
+  }
+  
 
-  await pool.query(`DELETE FROM obra_links WHERE id_link = ${id_link}`);
+  await pool.query(`DELETE FROM obras_links WHERE id_link = ${id_link}`);
+  await pool.query(`DELETE FROM homenagens_links WHERE id_link = ${id_link}`);
 
   await pool.query(`DELETE FROM link where id_link = ${id_link}`);
   return res.status(200).json({ Mensagem: "Link excluído com sucesso." });

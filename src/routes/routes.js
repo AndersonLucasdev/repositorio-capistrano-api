@@ -80,14 +80,23 @@ import {
 } from "../controllers/controllersInstituicoes.js";
 
 import {
-  MostrarHomenagemPeloID,
-  MostrarHomenagensAleatorio,
-  MostrarHomenagensOrdemAlfabetica,
-  MostrarHomenagensPorInstituicoes,
-  MostrarPeloNomeHomenagem,
   MostrarTodasHomenagens,
+  MostrarHomenagensComNomeEIdUsuario,
+  MostrarHomenagensAleatorio,
+  MostrarHomenagemPeloID,
+  MostrarTodasHomenagensPorAssunto,
+  HomenagensOrdemAlfabetica,
+  HomenagensMaisRecentes,
   HomenagensMaisAntigas,
-  HomenagemMaisRecentes,
+  HomenagensCriadasMaisAntigas,
+  HomenagensCriadasMaisRecentes,
+  MostrarPeloNomeHomenagem,
+  MostrarPeloNomeHomenageado,
+  MostrarHomenagensPeloIDHomenageado,
+  MostrarHomenagensPeloNomeUsuario,
+  MostrarHomenagemPeloIDUsuario,
+  MostrarTodasHomenagensCapistrano,
+  MostrarTodasHomenagensOutrosHomenageados,
   CadastrarHomenagem,
   ExcluirHomenagem,
   EditarHomenagem,
@@ -110,15 +119,15 @@ route.post("/pesquisar_nome_obra", MostrarPeloNomeObra);
 route.post("/pesquisar_nome_autor", MostrarPeloNomeAutor);
 route.post("/pesquisar_nome_usuario", MostrarPeloNomeUsuario);
 route.post("/mostrar_todas_obras_assunto", MostrarTodasObrasPorAssunto);
-route.get("/mostrar_obras_id_autor", MostrarObrasPeloIDAutor);
-route.get("/mostrar_obras_id_usuario", MostrarObraPeloIDUsuario);
+route.get("/mostrar_obras_id_autor/:id_autor", MostrarObrasPeloIDAutor);
+route.get("/mostrar_obras_id_usuario/:id_usuario", MostrarObraPeloIDUsuario);
 route.get(
   "/mostrar_obras_com_nome_e_id_usuario",
   MostrarObrasComNomeEIdUsuario
 );
 route.post("/cadastro_obras", CadastrarObra);
 
-route.delete("/excluir_obra/:id", ExcluirObra);
+route.delete("/excluir_obra/:id_obra", ExcluirObra);
 
 route.patch("/editar_obra", EditarObra);
 
@@ -126,9 +135,9 @@ route.patch("/editar_obra", EditarObra);
 route.post("/cadastro_autor", CadastrarAutor);
 route.get("/mostrar_todos_autores", MostrarTodosAutores);
 route.post("/mostrar_autor_nome", MostrarAutorpeloNome);
-route.get("/mostrar_autor:id", MostrarAutorID);
+route.get("/mostrar_autor/:id", MostrarAutorID);
 route.patch("/editar_autor", EditarAutor);
-route.delete("/excluir_autor:id", ExcluirAutor);
+route.delete("/excluir_autor/:id", ExcluirAutor);
 
 // Usuários
 route.get("/mostrar_todos_usuarios", MostrarTodosUsuarios);
@@ -155,13 +164,14 @@ route.post("/mostrar_assuntos", MostrarTodosAssuntos);
 route.post("/mostrar_assunto_nome", MostrarAssuntopeloNome);
 route.get("/mostrar_assuntoid/:id", MostrarAssuntosID);
 route.post("/cadastrar_assunto", CadastrarAssunto);
-route.delete("/deletar_assunto", ExcluirAssunto);
+route.delete("/deletar_assunto/:id_assunto", ExcluirAssunto);
 route.patch("/editar_assunto", EditarAssunto);
 
 // link
 route.get("/mostrar_linkid/:id", MostrarLinkID);
 route.get("/msotrar_todos_links", MostrarTodoslinks);
 route.post("/cadastrar_link", CadastrarLink);
+
 
 // img
 route.get("/mostrar_imgid/:id", MostrarImgID);
@@ -180,16 +190,29 @@ route.patch("/editar_instituicao", EditarInstituicao);
 route.get("/mostrar_homenagens", MostrarTodasHomenagens);
 route.get("/mostrar_homenagem/:id", MostrarHomenagemPeloID);
 route.get("/mostrar_homenagens_aleatorio", MostrarHomenagensAleatorio);
-route.get("/mostrar_homenagens_alfabetico", MostrarHomenagensOrdemAlfabetica);
-route.post(
-  "/mostrar_homenagens_instituicoes",
-  MostrarHomenagensPorInstituicoes
-);
 route.post("mostrar_homenagem_nome", MostrarPeloNomeHomenagem);
 route.get("/mostrar_homenagens_antigas", HomenagensMaisAntigas);
-route.get("/mostrar_homenagens_recentes", HomenagemMaisRecentes);
+route.get("/mostrar_homenagens_recentes", HomenagensMaisRecentes);
+route.get("/mostrar_homenagens_capistrano", MostrarTodasHomenagensCapistrano)
+route.get("/mostrar_outras_homenagens", MostrarTodasHomenagensOutrosHomenageados);
+route.get("/mostrar_homenagens_recentes", HomenagensMaisRecentes);
+route.get("/mostrar_homenagens_ordem_alfabetica", HomenagensOrdemAlfabetica);
+route.get("/mostrar_homenagens_criadas_antigas", HomenagensCriadasMaisAntigas);
+route.get("/mostrar_homenagens_criadas_recentes", HomenagensCriadasMaisRecentes);
+route.post("/pesquisar_nome_homenageado", MostrarPeloNomeHomenageado);
+route.post("/pesquisar_nome_usuario", MostrarHomenagensPeloNomeUsuario);
+route.post("/mostrar_todas_homenagens_assunto", MostrarTodasHomenagensPorAssunto);
+route.get("/mostrar_obras_id_homenageado/:id_homenageado", MostrarHomenagensPeloIDHomenageado);
+route.get("/mostrar_homenagens_id_usuario/:id_usuario", MostrarHomenagemPeloIDUsuario);
+route.get(
+  "/mostrar_homenagens_com_nome_e_id_usuario",
+  MostrarHomenagensComNomeEIdUsuario
+);
+
 route.post("/cadastrar_homenagem", CadastrarHomenagem);
 route.delete("/deletar_homenagem/:id", ExcluirHomenagem);
 route.patch("/editar_homenagemm", EditarHomenagem);
+
+
 
 export default route;

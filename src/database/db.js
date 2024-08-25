@@ -106,25 +106,25 @@ const createTables = async () => {
     );
 
 
-    CREATE TABLE IF NOT EXISTS homenagem_instituicao (
+    CREATE TABLE IF NOT EXISTS homenagens_instituicoes (
       id_homenagem SERIAL REFERENCES homenagem(id_homenagem),
       id_instituicao SERIAL REFERENCES instituicao(id_instituicao),
       PRIMARY KEY (id_homenagem, id_instituicao)
     );
 
-    CREATE TABLE IF NOT EXISTS homenagem_assuntos (
+    CREATE TABLE IF NOT EXISTS homenagens_assuntos (
       id_assunto INTEGER REFERENCES assunto(id_assunto),
       id_homenagem INTEGER REFERENCES homenagem(id_homenagem),
       PRIMARY KEY (id_homenagem, id_assunto)
     );
 
-    CREATE TABLE IF NOT EXISTS homenagem_links (
+    CREATE TABLE IF NOT EXISTS homenagens_links (
       id_homenagem INTEGER REFERENCES homenagem(id_homenagem),
       id_link INTEGER REFERENCES link(id_link),
       PRIMARY KEY (id_homenagem, id_link)
     );
 
-    CREATE TABLE IF NOT EXISTS homenagem_imgs (
+    CREATE TABLE IF NOT EXISTS homenagens_imgs (
       id_homenagem INTEGER REFERENCES homenagem(id_homenagem),
       id_img INTEGER REFERENCES img(id_img),
       PRIMARY KEY (id_homenagem, id_img)
