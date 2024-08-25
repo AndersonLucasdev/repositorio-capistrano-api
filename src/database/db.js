@@ -3,7 +3,8 @@ const { Pool } = pg;
 
 const pool = new Pool({
   connectionString:
-  "postgres://default:1nXJPu7fHoBO@ep-divine-breeze-84064744.us-east-1.postgres.vercel-storage.com:5432/verceldb",
+  "postgres://default:F7DlrNAa9zKP@ep-icy-grass-a4xgnecc.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require",
+  // "postgres://default:1nXJPu7fHoBO@ep-divine-breeze-84064744.us-east-1.postgres.vercel-storage.com:5432/verceldb",
   ssl: {
     rejectUnauthorized: false,
     sslmode: "require",
@@ -118,18 +119,7 @@ const createTables = async () => {
       PRIMARY KEY (id_homenagem, id_img)
     );
     
-    CREATE TABLE IF NOT EXISTS registros_acesso (
-      id_registros_acesso SERIAL PRIMARY KEY,
-      endereco_ip VARCHAR(15) NOT NULL,
-      horario_de_entrada TIMESTAMPTZ NOT NULL
-  );
-    
-    CREATE TABLE IF NOT EXISTS visualizacoes_pagina (
-      id_visualizacoes_pagina SERIAL PRIMARY KEY,
-      url_da_pagina TEXT NOT NULL,
-      id_registro_de_acesso INT REFERENCES registros_de_acesso(id_registros_acesso) NOT NULL,
-      horario_de_visualizacao TIMESTAMPTZ NOT NULL
-  );
+  
 
     `);
     client.release();
@@ -138,6 +128,19 @@ const createTables = async () => {
     console.error("Erro ao criar tabelas e campos:", error);
   }
 };
+
+//   CREATE TABLE IF NOT EXISTS registros_acesso (
+  //     id_registros_acesso SERIAL PRIMARY KEY,
+  //     endereco_ip VARCHAR(15) NOT NULL,
+  //     horario_de_entrada TIMESTAMPTZ NOT NULL
+  // );
+    
+  //   CREATE TABLE IF NOT EXISTS visualizacoes_pagina (
+  //     id_visualizacoes_pagina SERIAL PRIMARY KEY,
+  //     url_da_pagina TEXT NOT NULL,
+  //     id_registro_de_acesso INT REFERENCES registros_de_acesso(id_registros_acesso) NOT NULL,
+  //     horario_de_visualizacao TIMESTAMPTZ NOT NULL
+  // );
 
 createTables();
 

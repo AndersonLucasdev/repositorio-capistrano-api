@@ -210,7 +210,7 @@ route.get(
 
 route.post("/cadastrar_homenagem", CadastrarHomenagem);
 route.delete("/deletar_homenagem/:id", ExcluirHomenagem);
-route.patch("/editar_homenagemm", EditarHomenagem);
+route.patch("/editar_homenagem", EditarHomenagem);
 
 
 
