@@ -340,44 +340,6 @@ ORDER BY
   }
 };
 
-const MostrarHomenagensPorInstituicoes = async (req, res) => {
-  const { instituicao } = req.body;
-
-  try {
-    if (!instituicao) {
-      return res
-        .status(200)
-        .json({ Mensagem: "Há campo(s) vazio(s).", status: 400 });
-    }
-
-    const homenagem = await pool.query(
-      `
-    SELECT
-    h.id_homenagem,
-    h.nome AS nome_homenagem,
-    h.data_criacao,
-    STRING_AGG(i.nome, ', ') AS instituicoes,
-    h.descricao,
-    h.img
-FROM
-    homenagem h
-INNER JOIN
-    homenagem_instituicao hi ON h.id_homenagem = hi.id_homenagem
-INNER JOIN
-    instituicao i ON hi.id_instituicao = i.id_instituicao
-WHERE
-    i.nome = $1
-GROUP BY
-    h.id_homenagem, h.nome, h.data_criacao
-    ;`,
-      [instituicao]
-    );
-    res.status(200).json(homenagem.rows);
-  } catch (erro) {
-    return res.status(500).json({ Message: erro.Message });
-  }
-};
-
 const HomenagensMaisAntigas = async (req, res) => {
   try {
     const homenagens = await pool.query(`
@@ -529,30 +491,257 @@ const MostrarPeloNomeHomenagem = async (req, res) => {
 
   try {
     const homenagem = await pool.query(`
-    SELECT
-    h.id_homenagem,
-    h.nome AS nome_homenagem,
-    h.data_criacao,
-    STRING_AGG(i.nome, ', ') AS instituicoes,
-    h.descricao,
-    h.img
-FROM
-    homenagem h
-INNER JOIN
-    homenagem_instituicao hi ON h.id_homenagem = hi.id_homenagem
-INNER JOIN
-    instituicao i ON hi.id_instituicao = i.id_instituicao
-WHERE 
-    h.nome ILIKE '%' || '${titulo}' || '%'
-GROUP BY
-    h.id_homenagem, h.nome, h.data_criacao;
-
+    SELECT 
+    sub.id_homenagem, 
+    sub.titulo, 
+    sub.data_criacao, 
+    sub.data_publi, 
+    sub.resumo, 
+    sub.usuario, 
+    string_agg(DISTINCT sub.links, ', ') as links, 
+    string_agg(DISTINCT sub.imgs, ', ') as imgs,
+    string_agg(DISTINCT sub.assuntos, ', ') as assuntos, 
+    string_agg(DISTINCT sub.instituicoes, ', ') as instituicoes
+FROM (
+    SELECT 
+        h.id_homenagem, 
+        h.titulo, 
+        h.data_criacao, 
+        h.data_publi, 
+        h.resumo, 
+        u.nome as usuario, 
+        li.link as links, 
+        im.link as imgs,
+        ass.nome as assuntos, 
+        inst.nome as instituicoes
+    FROM 
+        homenagem h
+    INNER JOIN 
+        homenagens_instituicoes hi ON h.id_homenagem = hi.id_homenagem
+    INNER JOIN 
+        instituicao inst ON inst.id_instituicao = hi.id_instituicao
+    INNER JOIN 
+        usuario u ON u.id_usuario = h.id_usuario
+    INNER JOIN 
+        homenagens_assuntos has ON h.id_homenagem = has.id_homenagem
+    INNER JOIN 
+        assunto ass ON ass.id_assunto = has.id_assunto
+    INNER JOIN 
+        homenagens_links hl ON hl.id_homenagem = h.id_homenagem
+    INNER JOIN 
+        link li ON li.id_link = hl.id_link
+    INNER JOIN 
+        homenagens_imgs hi2 ON hi2.id_homenagem = h.id_homenagem
+    INNER JOIN 
+        img im ON im.id_img = hi2.id_img
+    WHERE 
+        h.titulo ILIKE '%' || '${titulo}' || '%'
+    GROUP BY 
+        h.id_homenagem, h.titulo, h.resumo, u.nome, h.data_criacao, h.data_publi, ass.nome, li.link, im.link, inst.nome
+) as sub
+GROUP BY 
+    sub.id_homenagem, 
+    sub.titulo, 
+    sub.data_criacao, 
+    sub.data_publi, 
+    sub.resumo, 
+    sub.usuario
+ORDER BY 
+    sub.id_homenagem;
     `);
 
     if (homenagem.rows.length === 0) {
       return res
         .status(200)
-        .json({ mensagem: "homenagen(s) não encontrada(s)", status: 400 });
+        .json({ mensagem: "Homenagem(ns) não encontrada(s)", status: 400 });
+    }
+
+    return res.status(200).json(homenagem.rows);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ mensagem: "Ocorreu um erro interno no servidor" });
+  }
+};
+
+const MostrarPeloNomeInstituicao = async (req, res) => {
+  const { nome } = req.body;
+
+  try {
+    const homenagem = await pool.query(`
+    SELECT 
+    sub.id_homenagem, sub.data_criacao, sub.titulo, sub.resumo, sub.data_publi, sub.usuario, 
+    string_agg(DISTINCT sub.links, ', ') as links, 
+    string_agg(DISTINCT sub.imgs, ', ') as imgs,
+    string_agg(DISTINCT sub.assuntos, ', ') as assuntos, 
+    string_agg(DISTINCT sub.instituicoes, ', ') as instituicoes
+FROM (
+    SELECT 
+        h.id_homenagem, 
+        h.data_criacao, 
+        h.titulo, 
+        h.resumo, 
+        h.data_publi, 
+        u.nome as usuario, 
+        li.link as links, 
+        im.link as imgs,
+        ass.nome as assuntos, 
+        inst.nome as instituicoes
+    FROM homenagem h
+    INNER JOIN homenagens_instituicoes hi ON h.id_homenagem = hi.id_homenagem
+    INNER JOIN instituicao inst ON inst.id_instituicao = hi.id_instituicao
+    INNER JOIN usuario u ON u.id_usuario = h.id_usuario
+    INNER JOIN homenagens_assuntos has ON h.id_homenagem = has.id_homenagem
+    INNER JOIN assunto ass ON ass.id_assunto = has.id_assunto
+    INNER JOIN homenagens_links hl ON hl.id_homenagem = h.id_homenagem
+    INNER JOIN link li ON li.id_link = hl.id_link
+    INNER JOIN homenagens_imgs hi2 ON hi2.id_homenagem = h.id_homenagem
+    INNER JOIN img im ON im.id_img = hi2.id_img
+    WHERE inst.nome ILIKE '%' || '${nome}' || '%'
+) as sub
+GROUP BY 
+    sub.id_homenagem, sub.data_criacao, sub.titulo, sub.resumo, sub.data_publi, sub.usuario
+ORDER BY 
+    sub.id_homenagem;
+    `);
+
+    if (homenagem.rows.length === 0) {
+      return res
+        .status(200)
+        .json({ mensagem: "Homenagem(ns) não encontrada(s)", status: 400 });
+    }
+
+    return res.status(200).json(homenagem.rows);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ mensagem: "Ocorreu um erro interno no servidor" });
+  }
+};
+
+const MostrarHomenagensPeloIDInstituicao = async (req, res) => {
+  const { id_instituicao } = req.params;
+
+  try {
+    const homenagem = await pool.query(
+      `
+    SELECT 
+        h.id_homenagem, h.titulo, h.data_criacao, h.resumo, h.data_publi, u.nome as usuario, 
+        string_agg(DISTINCT li.link, ', ') as links, 
+        string_agg(DISTINCT im.link, ', ') as imgs,
+        string_agg(DISTINCT ass.nome, ', ') as assuntos, string_agg(DISTINCT inst.nome, ', ') as instituicoes
+        FROM homenagem h
+        inner join homenagens_instituicoes hi on h.id_homenagem = hi.id_homenagem
+        inner join instituicao inst on inst.id_instituicao = hi.id_instituicao
+        inner join usuario u on u.id_usuario = h.id_usuario
+        INNER JOIN homenagens_assuntos has ON h.id_homenagem = has.id_homenagem
+        INNER JOIN assunto ass ON ass.id_assunto = has.id_assunto
+        INNER JOIN homenagens_links hl ON hl.id_homenagem = h.id_homenagem
+        INNER JOIN link li ON li.id_link = hl.id_link
+        INNER JOIN homenagens_imgs hi2 ON hi2.id_homenagem = h.id_homenagem
+        INNER JOIN img im ON im.id_img = hi2.id_img
+        where inst.id_instituicao = $1
+        
+        group by h.id_homenagem, inst.nome, h.titulo, h.resumo, h.data_criacao, u.nome, h.data_publi, ass.nome, li.link, im.link
+        
+        order by h.id_homenagem
+    `,
+      [id_instituicao]
+    );
+
+    if (homenagem.rows.length === 0) {
+      return res
+        .status(200)
+        .json({ mensagem: "Homenagem(ns) não encontrada(s)", status: 400 });
+    }
+
+    return res.status(200).json(homenagem.rows);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ mensagem: "Ocorreu um erro interno no servidor" });
+  }
+};
+
+const MostrarPeloNomeUsuario = async (req, res) => {
+  const { nome } = req.body;
+
+  try {
+    const homenagem = await pool.query(`
+    SELECT 
+    h.id_homenagem, h.data_criacao, h.titulo, h.data_publi, h.resumo, u.nome as usuario, 
+    string_agg(DISTINCT li.link, ', ') as links, 
+    string_agg(DISTINCT im.link, ', ') as imgs,
+    string_agg(DISTINCT ass.nome, ', ') as assuntos, 
+    string_agg(DISTINCT inst.nome, ', ') as instituicoes
+FROM homenagem h
+INNER JOIN homenagens_instituicoes hi ON h.id_homenagem = hi.id_homenagem
+INNER JOIN instituicao inst ON inst.id_instituicao = hi.id_instituicao
+INNER JOIN usuario u ON u.id_usuario = h.id_usuario
+INNER JOIN homenagens_assuntos has ON h.id_homenagem = has.id_homenagem
+INNER JOIN assunto ass ON ass.id_assunto = has.id_assunto
+INNER JOIN homenagens_links hl ON hl.id_homenagem = h.id_homenagem
+INNER JOIN link li ON li.id_link = hl.id_link
+INNER JOIN homenagens_imgs hi2 ON hi2.id_homenagem = h.id_homenagem
+INNER JOIN img im ON im.id_img = hi2.id_img
+WHERE u.nome ILIKE '%' || '${nome}' || '%'
+GROUP BY h.id_homenagem, h.data_criacao, h.titulo, h.data_publi, h.resumo, u.nome
+ORDER BY h.id_homenagem;
+    `);
+
+    if (homenagem.rows.length === 0) {
+      return res
+        .status(200)
+        .json({ mensagem: "Homenagem(ns) não encontrada(s)", status: 400 });
+    }
+
+    return res.status(200).json(homenagem.rows);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ mensagem: "Ocorreu um erro interno no servidor" });
+  }
+};
+
+const MostrarHomenagemPeloIDUsuario = async (req, res) => {
+  const { id_usuario } = req.params;
+  try {
+    const homenagem = await pool.query(
+      `
+      SELECT 
+      h.id_homenagem, h.titulo, h.data_criacao, h.data_publi, h.resumo, u.nome as usuario, 
+      string_agg(DISTINCT li.link, ', ') as links, 
+      string_agg(DISTINCT im.link, ', ') as imgs,
+      string_agg(DISTINCT ass.nome, ', ') as assuntos, 
+      string_agg(DISTINCT inst.nome, ', ') as instituicoes
+  FROM 
+      homenagem h
+  INNER JOIN 
+      homenagens_instituicoes hi ON h.id_homenagem = hi.id_homenagem
+  INNER JOIN 
+      instituicao inst ON inst.id_instituicao = hi.id_instituicao
+  INNER JOIN 
+      usuario u ON u.id_usuario = h.id_usuario
+  INNER JOIN homenagens_assuntos has ON h.id_homenagem = has.id_homenagem
+  INNER JOIN assunto ass ON ass.id_assunto = has.id_assunto
+  INNER JOIN homenagens_links hl ON hl.id_homenagem = h.id_homenagem
+  INNER JOIN link li ON li.id_link = hl.id_link
+  INNER JOIN homenagens_imgs hi2 ON hi2.id_homenagem = h.id_homenagem
+  INNER JOIN img im ON im.id_img = hi2.id_img
+  WHERE 
+      u.id_usuario = $1
+  GROUP BY 
+      h.id_homenagem, h.titulo, h.resumo, u.nome, h.data_criacao, h.data_publi
+  ORDER BY 
+      h.id_homenagem;
+    `,
+      [id_usuario]
+    );
+
+    if (homenagem.rows.length === 0) {
+      return res
+        .status(200)
+        .json({ mensagem: "Homenagem(ns) não encontrada(s)", status: 400 });
     }
 
     return res.status(200).json(homenagem.rows);
