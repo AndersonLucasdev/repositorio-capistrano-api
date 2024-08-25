@@ -29,6 +29,16 @@ const createTables = async () => {
       id_link SERIAL PRIMARY KEY,
       link TEXT
     );
+
+    CREATE TABLE IF NOT EXISTS img (
+      id_img SERIAL PRIMARY KEY,
+      link TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS assunto (
+      id_assunto SERIAL PRIMARY KEY,
+      nome VARCHAR(255)
+    );
     
     CREATE TABLE IF NOT EXISTS administrador (
       id_administrador SERIAL PRIMARY KEY,
@@ -50,10 +60,17 @@ const createTables = async () => {
       id_link SERIAL REFERENCES link(id_link),
       PRIMARY KEY (id_obra, id_link)
     );
+
+    CREATE TABLE IF NOT EXISTS obras_assuntos (
+      id_assunto SERIAL REFERENCES assunto(id_assunto),
+      id_obra SERIAL REFERENCES obra(id_obra),
+      PRIMARY KEY (id_obra, id_assunto)
+    );
     
-    CREATE TABLE IF NOT EXISTS img (
-      id_img SERIAL PRIMARY KEY,
-      link TEXT
+    CREATE TABLE IF NOT EXISTS obras_autores (
+      id_obra SERIAL REFERENCES obra(id_obra),
+      id_autor SERIAL REFERENCES autor(id_autor),
+      PRIMARY KEY (id_obra, id_autor)
     );
     
     CREATE TABLE IF NOT EXISTS obras_imgs (
@@ -62,16 +79,13 @@ const createTables = async () => {
       PRIMARY KEY (id_obra, id_img)
     );
     
-    CREATE TABLE IF NOT EXISTS assunto (
-      id_assunto SERIAL PRIMARY KEY,
-      nome VARCHAR(255)
-    );
-    
     CREATE TABLE IF NOT EXISTS homenagem (
       id_homenagem SERIAL PRIMARY KEY,
-      nome VARCHAR(255),
-      descricao VARCHAR(255),
-      img VARCHAR(255),
+      id_usuario INTEGER REFERENCES usuario(id_usuario),
+      titulo VARCHAR(255),
+      resumo TEXT,
+      descricao TEXT,
+      data_publi VARCHAR(255),
       data_criacao VARCHAR(255)
     );
 
@@ -86,16 +100,22 @@ const createTables = async () => {
       PRIMARY KEY (id_homenagem, id_instituicao)
     );
 
-    CREATE TABLE IF NOT EXISTS obras_assuntos (
-      id_assunto SERIAL REFERENCES assunto(id_assunto),
-      id_obra SERIAL REFERENCES obra(id_obra),
-      PRIMARY KEY (id_obra, id_assunto)
+    CREATE TABLE IF NOT EXISTS homenagem_assuntos (
+      id_assunto INTEGER REFERENCES assunto(id_assunto),
+      id_homenagem INTEGER REFERENCES homenagem(id_homenagem),
+      PRIMARY KEY (id_homenagem, id_assunto)
     );
-    
-    CREATE TABLE IF NOT EXISTS obras_autores (
-      id_obra SERIAL REFERENCES obra(id_obra),
-      id_autor SERIAL REFERENCES autor(id_autor),
-      PRIMARY KEY (id_obra, id_autor)
+
+    CREATE TABLE IF NOT EXISTS homenagem_links (
+      id_homenagem INTEGER REFERENCES homenagem(id_homenagem),
+      id_link INTEGER REFERENCES link(id_link),
+      PRIMARY KEY (id_homenagem, id_link)
+    );
+
+    CREATE TABLE IF NOT EXISTS homenagem_imgs (
+      id_homenagem INTEGER REFERENCES homenagem(id_homenagem),
+      id_img INTEGER REFERENCES img(id_img),
+      PRIMARY KEY (id_homenagem, id_img)
     );
     
     CREATE TABLE IF NOT EXISTS registros_acesso (
