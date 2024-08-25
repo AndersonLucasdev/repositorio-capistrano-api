@@ -13,12 +13,9 @@ const MostrarTodasHomenagens = async (req, res) => {
       u.nome as usuario, 
       string_agg(DISTINCT li.link, ', ') as links, 
       string_agg(DISTINCT im.link, ', ') as imgs, 
-      string_agg(DISTINCT ass.nome, ', ') as assuntos, 
-      string_agg(DISTINCT ins.nome, ', ') as instituicoes,
+      string_agg(DISTINCT ass.nome, ', ') as assuntos,
       string_agg(DISTINCT ho.nome, ', ') as homenageados
       FROM homenagem h
-      INNER JOIN homenagens_instituicoes hi ON h.id_homenagem = hi.id_homenagem
-      INNER JOIN instituicao ins ON ins.id_instituicao = hi.id_instituicao
       INNER JOIN usuario u ON u.id_usuario = h.id_usuario
       INNER JOIN homenagens_assuntos has ON has.id_homenagem = h.id_homenagem
       INNER JOIN assunto ass ON ass.id_assunto = has.id_assunto
@@ -55,14 +52,9 @@ const MostrarHomenagensComNomeEIdUsuario = async (req, res) => {
       string_agg(DISTINCT li.link, ', ') as links, 
       string_agg(DISTINCT im.link, ', ') as imgs,
       string_agg(DISTINCT ass.nome, ', ') as assuntos, 
-      string_agg(DISTINCT ins.nome, ', ') as instituicoes,
       string_agg(DISTINCT ho.nome, ', ') as homenageados
       FROM 
       homenagem h
-      INNER JOIN 
-      homenagens_instituicoes hi ON h.id_homenagem = hi.id_homenagem
-      INNER JOIN 
-      instituicao ins ON ins.id_instituicao = hi.id_instituicao
       INNER JOIN 
       usuario u ON u.id_usuario = h.id_usuario
       INNER JOIN homenagens_assuntos has ON h.id_homenagem = has.id_homenagem
@@ -104,8 +96,7 @@ const MostrarHomenagensAleatorio = async (req, res) => {
       sub.id_homenagem, sub.titulo, sub.data_publi, sub.data_criacao, sub.resumo, sub.usuario, 
       string_agg(sub.links, ', ') as links, 
       string_agg(sub.imgs, ', ') as imgs, 
-      string_agg(sub.assuntos, ', ') as assuntos, 
-      string_agg(sub.instituicoes, ', ') as instituicoes,
+      string_agg(sub.assuntos, ', ') as assuntos,
       string_agg(sub.homenageados, ', ') as homenageados
       FROM (
         SELECT DISTINCT
@@ -121,8 +112,6 @@ const MostrarHomenagensAleatorio = async (req, res) => {
         ins.nome as instituicoes,
         ho.nome as homenageados
         FROM homenagem h
-        INNER JOIN homenagens_instituicoes hi ON h.id_homenagem = hi.id_homenagem
-        INNER JOIN instituicao ins ON ins.id_instituicao = hi.id_instituicao
         INNER JOIN usuario u ON u.id_usuario = h.id_usuario
         INNER JOIN homenagens_assuntos has ON has.id_homenagem = h.id_homenagem
         INNER JOIN assunto ass ON ass.id_assunto = has.id_assunto
@@ -165,15 +154,10 @@ const MostrarHomenagemPeloID = async (req, res) => {
       string_agg(DISTINCT li.link, ', ') as links,
       string_agg(DISTINCT im.link, ', ') as imgs,
       string_agg(DISTINCT ass.nome, ', ') as assuntos,
-      string_agg(DISTINCT ins.nome, ', ') as instituicoes,
       string_agg(DISTINCT ho.nome, ', ') as homenageados,
       h.descricao
       FROM 
       homenagem h
-      INNER JOIN 
-      homenagens_instituicoes hi ON h.id_homenagem = hi.id_homenagem
-      INNER JOIN 
-      instituicao ins ON ins.id_instituicao = hi.id_instituicao
       INNER JOIN 
       usuario u ON u.id_usuario = h.id_usuario
       INNER JOIN homenagens_assuntos has ON h.id_homenagem = has.id_homenagem
@@ -210,12 +194,9 @@ const MostrarTodasHomenagensPorAssunto = async (req, res) => {
         u.nome as usuario, 
         string_agg(DISTINCT li.link, ', ') as links, 
         string_agg(DISTINCT im.link, ', ') as imgs, 
-        string_agg(DISTINCT ass.nome, ', ') as assuntos, 
-        string_agg(DISTINCT ins.nome, ', ') as instituicoes,
+        string_agg(DISTINCT ass.nome, ', ') as assuntos,
         string_agg(DISTINCT ho.nome, ', ') as homenageados
     FROM homenagem h
-    INNER JOIN homenagens_instituicoes hi ON h.id_homenagem = hi.id_homenagem
-    INNER JOIN instituicao ins ON ins.id_instituicao = hi.id_instituicao
     INNER JOIN usuario u ON u.id_usuario = h.id_usuario
     INNER JOIN homenagens_assuntos has ON has.id_homenagem = h.id_homenagem
     INNER JOIN assunto ass ON ass.id_assunto = has.id_assunto
@@ -253,6 +234,56 @@ const MostrarTodasHomenagensPorAssunto = async (req, res) => {
   }
 };
 
+const MostrarTodasHomenagensPorInstituicao = async (req, res) => {
+  const { instituicao } = req.body;
+
+  try {
+    const homenagens = await pool.query(
+      `
+        h.id_homenagem, 
+    h.titulo, 
+    h.data_publi, 
+    h.data_criacao, 
+    h.resumo, 
+    u.nome as usuario, 
+    string_agg(DISTINCT li.link, ', ') as links, 
+    string_agg(DISTINCT im.link, ', ') as imgs, 
+    string_agg(DISTINCT ass.nome, ', ') as assuntos,
+    string_agg(DISTINCT ho.nome, ', ') as homenageados
+    FROM homenagem h
+    INNER JOIN usuario u ON u.id_usuario = h.id_usuario
+    INNER JOIN homenagens_assuntos has ON has.id_homenagem = h.id_homenagem
+    INNER JOIN assunto ass ON ass.id_assunto = has.id_assunto
+    INNER JOIN homenagens_links hl ON hl.id_homenagem = h.id_homenagem
+    INNER JOIN link li ON li.id_link = hl.id_link
+    INNER JOIN homenagens_imgs hi ON hi.id_homenagem = h.id_homenagem
+    INNER JOIN img im ON im.id_img = hi.id_img
+    INNER JOIN homenagens_homenageados hh ON hh.id_homenagem = h.id_homenagem
+    INNER JOIN homenageado ho ON ho.id_homenageado = hh.id_homenageado
+    WHERE 
+    ins.nome = $1
+    GROUP BY 
+    h.id_homenagem, 
+    h.titulo, 
+    h.resumo, 
+    u.nome, 
+    h.data_publi, 
+    h.data_criacao
+      `, [instituicao]
+    );
+
+    if (homenagens.rows.length === 0) {
+      return res
+        .status(200)
+        .json({ Mensagem: "Homenagem(s) não encontrada(s).", status: 400 });
+    }
+
+    return res.status(200).json(homenagens.rows);
+  } catch (erro) {
+    return res.status(500).json({ Mensagem: erro.Mensagem });
+  }
+};
+
 const HomenagensOrdemAlfabetica = async (req, res) => {
   try {
     const homenagens = await pool.query(`
@@ -266,11 +297,8 @@ const HomenagensOrdemAlfabetica = async (req, res) => {
         string_agg(DISTINCT li.link, ', ') as links, 
         string_agg(DISTINCT im.link, ', ') as imgs,
         string_agg(DISTINCT ass.nome, ', ') as assuntos,
-        string_agg(DISTINCT ins.nome, ', ') as instituicoes,
         string_agg(DISTINCT ho.nome, ', ') as homenageados
     FROM homenagem o
-    INNER JOIN homenagens_instituicoes hi ON o.id_homenagem = hi.id_homenagem
-    INNER JOIN instituicao ins ON ins.id_instituicao = hi.id_instituicao
     INNER JOIN usuario u ON u.id_usuario = o.id_usuario
     INNER JOIN homenagens_assuntos has ON o.id_homenagem = has.id_homenagem
     INNER JOIN assunto ass ON ass.id_assunto = has.id_assunto
@@ -306,19 +334,15 @@ const HomenagensMaisRecentes = async (req, res) => {
     string_agg(DISTINCT sub.links, ', ') as links, 
     string_agg(DISTINCT sub.imgs, ', ') as imgs,
     string_agg(DISTINCT sub.assuntos, ', ') as assuntos, 
-    string_agg(DISTINCT sub.instituicoes, ', ') as instituicoes,
     string_agg(DISTINCT sub.homenageados, ', ') as homenageados
 FROM (
     SELECT 
         o.id_homenagem, o.titulo, o.data_criacao, o.data_publi, o.resumo, u.nome as usuario, 
         li.link as links, 
         im.link as imgs,
-        ass.nome as assuntos, 
-        ins.nome as instituicoes,
+        ass.nome as assuntos,
         ho.nome as homenageados
     FROM homenagem o
-    INNER JOIN homenagens_instituicoes hi ON o.id_homenagem = hi.id_homenagem
-    INNER JOIN instituicao ins ON ins.id_instituicao = hi.id_instituicao
     INNER JOIN usuario u ON u.id_usuario = o.id_usuario
     INNER JOIN homenagens_assuntos has ON o.id_homenagem = has.id_homenagem
     INNER JOIN assunto ass ON ass.id_assunto = has.id_assunto
@@ -357,16 +381,11 @@ const HomenagensMaisAntigas = async (req, res) => {
       h.id_homenagem,
       h.titulo AS nome_homenagem,
       h.data_criacao,
-      STRING_AGG(i.nome, ', ') AS instituicoes,
       h.descricao,
       STRING_AGG(im.link, ', ') AS imgs,
       STRING_AGG(ho.nome, ', ') AS homenageados
     FROM
       homenagem h
-    INNER JOIN
-      homenagens_instituicoes hi ON h.id_homenagem = hi.id_homenagem
-    INNER JOIN
-      instituicao i ON hi.id_instituicao = i.id_instituicao
     INNER JOIN
       homenagens_imgs hi2 ON hi2.id_homenagem = h.id_homenagem
     INNER JOIN
@@ -407,7 +426,6 @@ const HomenagensCriadasMaisAntigas = async (req, res) => {
         string_agg(DISTINCT links, ', ') as links, 
         string_agg(DISTINCT imgs, ', ') as imgs, 
         string_agg(DISTINCT assuntos, ', ') as assuntos, 
-        string_agg(DISTINCT instituicoes, ', ') as instituicoes,
         string_agg(DISTINCT homenageados, ', ') as homenageados
       FROM (
         SELECT 
@@ -420,15 +438,10 @@ const HomenagensCriadasMaisAntigas = async (req, res) => {
           li.link as links, 
           im.link as imgs, 
           ass.nome as assuntos, 
-          ins.nome as instituicoes,
           ho.nome as homenageados,
           ROW_NUMBER() OVER (PARTITION BY o.id_homenagem ORDER BY o.data_criacao ASC) AS rn
         FROM 
           homenagem o
-        INNER JOIN 
-          homenagens_instituicoes hi ON o.id_homenagem = hi.id_homenagem
-        INNER JOIN 
-          instituicao ins ON ins.id_instituicao = hi.id_instituicao
         INNER JOIN 
           usuario u ON u.id_usuario = o.id_usuario
         INNER JOIN homenagens_assuntos has ON o.id_homenagem = has.id_homenagem
@@ -474,7 +487,6 @@ const HomenagensCriadasMaisRecentes = async (req, res) => {
         string_agg(DISTINCT sub.links, ', ') as links, 
         string_agg(DISTINCT sub.imgs, ', ') as imgs, 
         string_agg(DISTINCT sub.assuntos, ', ') as assuntos, 
-        string_agg(DISTINCT sub.instituicoes, ', ') as instituicoes,
         string_agg(DISTINCT sub.homenageados, ', ') as homenageados
       FROM (
         SELECT 
@@ -487,11 +499,8 @@ const HomenagensCriadasMaisRecentes = async (req, res) => {
           li.link as links, 
           im.link as imgs,
           ass.nome as assuntos, 
-          ins.nome as instituicoes,
           ho.nome as homenageados
         FROM homenagem o
-        INNER JOIN homenagens_instituicoes hi ON o.id_homenagem = hi.id_homenagem
-        INNER JOIN instituicao ins ON ins.id_instituicao = hi.id_instituicao
         INNER JOIN usuario u ON u.id_usuario = o.id_usuario
         INNER JOIN homenagens_assuntos has ON o.id_homenagem = has.id_homenagem
         INNER JOIN assunto ass ON ass.id_assunto = has.id_assunto
@@ -538,7 +547,6 @@ const MostrarPeloNomeHomenagem = async (req, res) => {
         string_agg(DISTINCT sub.links, ', ') as links, 
         string_agg(DISTINCT sub.imgs, ', ') as imgs,
         string_agg(DISTINCT sub.assuntos, ', ') as assuntos, 
-        string_agg(DISTINCT sub.instituicoes, ', ') as instituicoes,
         string_agg(DISTINCT sub.homenageados, ', ') as homenageados
       FROM (
         SELECT 
@@ -551,14 +559,9 @@ const MostrarPeloNomeHomenagem = async (req, res) => {
           li.link as links, 
           im.link as imgs,
           ass.nome as assuntos, 
-          inst.nome as instituicoes,
           ho.nome as homenageados
         FROM 
           homenagem h
-        INNER JOIN 
-          homenagens_instituicoes hi ON h.id_homenagem = hi.id_homenagem
-        INNER JOIN 
-          instituicao inst ON inst.id_instituicao = hi.id_instituicao
         INNER JOIN 
           usuario u ON u.id_usuario = h.id_usuario
         INNER JOIN 
@@ -621,8 +624,7 @@ const MostrarPeloNomeHomenageado = async (req, res) => {
         sub.usuario, 
         string_agg(DISTINCT sub.links, ', ') as links, 
         string_agg(DISTINCT sub.imgs, ', ') as imgs,
-        string_agg(DISTINCT sub.assuntos, ', ') as assuntos, 
-        string_agg(DISTINCT sub.instituicoes, ', ') as instituicoes,
+        string_agg(DISTINCT sub.assuntos, ', ') as assuntos,
         string_agg(DISTINCT sub.homenageados, ', ') as homenageados
       FROM (
         SELECT 
@@ -635,13 +637,10 @@ const MostrarPeloNomeHomenageado = async (req, res) => {
           li.link as links, 
           im.link as imgs,
           ass.nome as assuntos, 
-          inst.nome as instituicoes,
           ho.nome as homenageados
         FROM homenagem h
         INNER JOIN homenagens_homenageados hh ON h.id_homenagem = hh.id_homenagem
         INNER JOIN homenageado ho ON ho.id_homenageado = hh.id_homenageado
-        INNER JOIN homenagens_instituicoes hi ON h.id_homenagem = hi.id_homenagem
-        INNER JOIN instituicao inst ON inst.id_instituicao = hi.id_instituicao
         INNER JOIN usuario u ON u.id_usuario = h.id_usuario
         INNER JOIN homenagens_assuntos has ON h.id_homenagem = has.id_homenagem
         INNER JOIN assunto ass ON ass.id_assunto = has.id_assunto
@@ -688,13 +687,10 @@ const MostrarHomenagensPeloIDHomenageado = async (req, res) => {
         string_agg(DISTINCT li.link, ', ') as links, 
         string_agg(DISTINCT im.link, ', ') as imgs,
         string_agg(DISTINCT ass.nome, ', ') as assuntos, 
-        string_agg(DISTINCT inst.nome, ', ') as instituicoes,
         string_agg(DISTINCT ho.nome, ', ') as homenageados
       FROM homenagem h
       INNER JOIN homenagens_homenageados hh ON h.id_homenagem = hh.id_homenagem
       INNER JOIN homenageado ho ON ho.id_homenageado = hh.id_homenageado
-      INNER JOIN homenagens_instituicoes hi ON h.id_homenagem = hi.id_homenagem
-      INNER JOIN instituicao inst ON inst.id_instituicao = hi.id_instituicao
       INNER JOIN usuario u ON u.id_usuario = h.id_usuario
       INNER JOIN homenagens_assuntos has ON h.id_homenagem = has.id_homenagem
       INNER JOIN assunto ass ON ass.id_assunto = has.id_assunto
@@ -736,11 +732,8 @@ const MostrarHomenagensPeloNomeUsuario = async (req, res) => {
         string_agg(DISTINCT li.link, ', ') as links, 
         string_agg(DISTINCT im.link, ', ') as imgs,
         string_agg(DISTINCT ass.nome, ', ') as assuntos, 
-        string_agg(DISTINCT inst.nome, ', ') as instituicoes,
         string_agg(DISTINCT ho.nome, ', ') as homenageados
       FROM homenagem h
-      INNER JOIN homenagens_instituicoes hi ON h.id_homenagem = hi.id_homenagem
-      INNER JOIN instituicao inst ON inst.id_instituicao = hi.id_instituicao
       INNER JOIN usuario u ON u.id_usuario = h.id_usuario
       INNER JOIN homenagens_assuntos has ON h.id_homenagem = has.id_homenagem
       INNER JOIN assunto ass ON ass.id_assunto = has.id_assunto
@@ -783,14 +776,9 @@ const MostrarHomenagemPeloIDUsuario = async (req, res) => {
         string_agg(DISTINCT li.link, ', ') as links, 
         string_agg(DISTINCT im.link, ', ') as imgs,
         string_agg(DISTINCT ass.nome, ', ') as assuntos, 
-        string_agg(DISTINCT inst.nome, ', ') as instituicoes,
         string_agg(DISTINCT ho.nome, ', ') as homenageados
       FROM 
         homenagem h
-      INNER JOIN 
-        homenagens_instituicoes hi ON h.id_homenagem = hi.id_homenagem
-      INNER JOIN 
-        instituicao inst ON inst.id_instituicao = hi.id_instituicao
       INNER JOIN 
         usuario u ON u.id_usuario = h.id_usuario
       INNER JOIN 
@@ -919,7 +907,6 @@ const CadastrarHomenagem = async (req, res) => {
     assunto,
     link,
     img,
-    instituicoes
   } = req.body;
 
   const TituloFormatado = primeiraLetraMaiuscula(titulo);
@@ -938,8 +925,7 @@ const CadastrarHomenagem = async (req, res) => {
       !homenageados ||
       !assunto ||
       !link ||
-      !img ||
-      !instituicoes
+      !img
     ) {
       return res
         .status(400)
@@ -963,24 +949,6 @@ const CadastrarHomenagem = async (req, res) => {
         return res
           .status(400)
           .json({ Mensagem: "Homenageado não encontrado.", status: 400 });
-      }
-    }
-
-    // Verifica se as instituições existem
-    const lista_instituicoes_id = [];
-    for (const instituicao_nome of instituicao) {
-      const InstituicaoFormatada = primeiraLetraMaiuscula(instituicao_nome);
-      const verificaInstituicao = await pool.query(
-        "SELECT id_instituicao FROM instituicao WHERE nome = $1",
-        [InstituicaoFormatada]
-      );
-
-      if (verificaInstituicao.rows.length > 0) {
-        lista_instituicoes_id.push(verificaInstituicao.rows[0].id_instituicao);
-      } else {
-        return res
-          .status(200)
-          .json({ Mensagem: "Instituição não encontrada.", status: 400 });
       }
     }
 
@@ -1070,13 +1038,6 @@ const CadastrarHomenagem = async (req, res) => {
       );
     }
 
-    for (const instituicao_id of lista_instituicoes_id) {
-      await pool.query(
-        "INSERT INTO homenagens_instituicoes (id_homenagem, id_instituicao) VALUES ($1, $2)",
-        [id_homenagem, instituicao_id]
-      );
-    }
-
     for (const assunto_id of lista_assuntos_id) {
       await pool.query(
         "INSERT INTO homenagens_assuntos (id_homenagem, id_assunto) VALUES ($1, $2)",
@@ -1115,12 +1076,10 @@ const ExcluirHomenagem = async (req, res) => {
         .json({ Mensagem: "Id não informado.", status: 400 });
     }
 
-    await pool.query(`DELETE FROM homenagem_instituicao WHERE id_homenagem = ${id}`);
     await pool.query(`DELETE FROM homenagens_homenageados WHERE id_homenagem = ${id}`);
     await pool.query(`DELETE FROM homenagens_links WHERE id_homenagem = ${id}`);
     await pool.query(`DELETE FROM homenagens_imgs WHERE id_homenagem = ${id}`);
     await pool.query(`DELETE FROM homenagens_assuntos WHERE id_homenagem = ${id}`);
-    await pool.query(`DELETE FROM homenagens_instituicoes WHERE id_homenagem = ${id}`);
     await pool.query(`DELETE FROM homenagem WHERE id_homenagem = ${id}`);
 
     return res
@@ -1135,34 +1094,68 @@ const ExcluirHomenagem = async (req, res) => {
 
 const EditarHomenagem = async (req, res) => {
   try {
-    const { nome, data_criacao, descricao, img, id_homenagem, instituicao } =
+    const { titulo,
+      id_obra,
+      link,
+      usuario,
+      autor,
+      assunto,
+      resumo,
+      descricao,
+      img,
+      data,
+      data_criacao } =
       req.body;
 
-    if (!nome && !data_criacao && !descricao && !img && !instituicao) {
+    if (!titulo &&
+      !link &&
+      !data_criacao &&
+      !usuario &&
+      !autor &&
+      !assunto &&
+      !resumo &&
+      !descricao &&
+      !img &&
+      !data) {
       return res
         .status(400)
         .json({ Mensagem: "Altere pelo menos um campo.", status: 400 });
     }
 
-    const nomeFormatado = primeiraLetraMaiuscula(nome);
-    const dataCriacaoFormatada = data_criacao ? data_criacao.trim() : undefined;
-    const descricaoFormatada = descricao ? descricao.trim() : undefined;
-    const imgFormatada = img ? img.trim() : undefined;
+    const TituloFormatado = primeiraLetraMaiuscula(titulo);
+    const resumoFormatado = capitalizarEPontuar(resumo);
+    const descricaoFormatada = descricao.trim();
+    const dataFormatada = data ? data.trim() : undefined;
+    const dataCricaoFormata = data_criacao ? data_criacao.trim() : undefined;
 
-    if (nomeFormatado) {
+    if (TituloFormatado) {
       await pool.query(
         "UPDATE homenagem SET nome = $1 WHERE id_homenagem = $2",
-        [nomeFormatado, id_homenagem]
+        [TituloFormatado, id_homenagem]
       );
     }
 
-    if (dataCriacaoFormatada) {
+    if (resumoFormatado) {
+      await pool.query(
+        "UPDATE homenagem SET resumo = $1 WHERE id_homenagem = $2",
+        [resumoFormatado, id_homenagem]
+      );
+    }
+
+    if (dataCricaoFormata) {
       await pool.query(
         "UPDATE homenagem SET data_criacao = $1 WHERE id_homenagem = $2",
-        [dataCriacaoFormatada, id_homenagem]
+        [dataCricaoFormata, id_homenagem]
       );
     }
 
+    if (dataFormatada) {
+      await pool.query(
+        "UPDATE homenagem SET data_publi = $1 WHERE id_homenagem = $2",
+        [dataFormatada, id_homenagem]
+      );
+    }
+    
     if (descricaoFormatada) {
       await pool.query(
         "UPDATE homenagem SET descricao = $1 WHERE id_homenagem = $2",
@@ -1177,32 +1170,6 @@ const EditarHomenagem = async (req, res) => {
       );
     }
 
-    if (instituicao) {
-      await pool.query(
-        "DELETE FROM homenagem_instituicao WHERE id_homenagem = $1",
-        [id_homenagem]
-      );
-
-      for (const instituicao_nome of instituicao) {
-        const instituicaoFormatada = primeiraLetraMaiuscula(instituicao_nome);
-        const verificaInstituicao = await pool.query(
-          "SELECT id_instituicao FROM instituicao WHERE nome = $1",
-          [instituicaoFormatada]
-        );
-
-        if (verificaInstituicao.rows.length > 0) {
-          const instituicao_id = verificaInstituicao.rows[0].id_instituicao;
-          await pool.query(
-            "INSERT INTO homenagem_instituicao (id_homenagem, id_instituicao) VALUES ($1, $2)",
-            [id_homenagem, instituicao_id]
-          );
-        } else {
-          return res
-            .status(400)
-            .json({ Mensagem: "Instituição não encontrada.", status: 400 });
-        }
-      }
-    }
 
     return res
       .status(200)
@@ -1230,6 +1197,7 @@ export {
   MostrarHomenagensPeloIDHomenageado,
   MostrarHomenagensPeloNomeUsuario,
   MostrarHomenagemPeloIDUsuario,
+  MostrarTodasHomenagensPorInstituicao,
   MostrarTodasHomenagensCapistrano,
   MostrarTodasHomenagensOutrosHomenageados,
   CadastrarHomenagem,
