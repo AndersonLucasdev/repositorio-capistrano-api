@@ -91,7 +91,6 @@ import {
   HomenagensCriadasMaisAntigas,
   HomenagensCriadasMaisRecentes,
   MostrarPeloNomeHomenagem,
-  MostrarTodasHomenagensPorInstituicao,
   MostrarPeloNomeHomenageado,
   MostrarHomenagensPeloIDHomenageado,
   MostrarHomenagensPeloNomeUsuario,

@@ -138,9 +138,7 @@ const Login = async (req, res) => {
     const { nome, senha } = req.body;
 
     if (!nome || !senha) {
-      return res
-        .status(200)
-        .json({ Mensagem: "Há campo(s) vazio(s).", status: 400 });
+      return res.status(400).json({ Mensagem: "Há campo(s) vazio(s)." });
     }
 
     const novoUsuario = primeiraLetraMaiuscula(nome);
@@ -150,6 +148,13 @@ const Login = async (req, res) => {
       "SELECT * FROM usuario WHERE nome = $1",
       [novoUsuario]
     );
+
+    if (verificaUsuario.rows.length === 0) {
+      return res
+        .status(400)
+        .json({ Mensagem: "Usuário ou senha incorretos." });
+    }
+
     const senhaValida = bcrypt.compareSync(
       novaSenha,
       verificaUsuario.rows[0].senha
@@ -157,13 +162,11 @@ const Login = async (req, res) => {
 
     if (!senhaValida) {
       return res
-        .status(200)
-        .json({ Mensagem: "Usuário ou senha incorretos.", status: 400 });
+        .status(400)
+        .json({ Mensagem: "Usuário ou senha incorretos." });
     }
 
     const usuarioId = verificaUsuario.rows[0].id_usuario;
-    const usuarioSenha = verificaUsuario.rows[0].senha;
-
     const token = jwt.sign(
       { usuario: verificaUsuario.rows[0].nome },
       "802c6ed36c616ef9df379ef94c380f",
@@ -173,28 +176,22 @@ const Login = async (req, res) => {
     const verificaUsuarioAdm = await pool.query(
       `SELECT u.id_usuario, u.nome 
         FROM usuario u 
-        inner join administrador a on a.id_usuario = u.id_usuario
-        where a.id_usuario = $1`,
+        INNER JOIN administrador a ON a.id_usuario = u.id_usuario
+        WHERE a.id_usuario = $1`,
       [usuarioId]
     );
-    if (verificaUsuarioAdm.rows.length > 0) {
-      res.cookie("token", token, { httpOnly: true });
-      res
-        .status(200)
-        .json({
-          token,
-          usuarioId,
-          novoUsuario,
-          usuarioSenha,
-          tipoUsuario: admin,
-        });
-    }
+
+    const tipoUsuario = verificaUsuarioAdm.rows.length > 0 ? 'admin' : 'user';
+
     res.cookie("token", token, { httpOnly: true });
-    res
-      .status(200)
-      .json({ token, usuarioId, novoUsuario, usuarioSenha, tipoUsuario: user });
+    return res.status(200).json({
+      token,
+      usuarioId,
+      nome: novoUsuario,
+      tipoUsuario,
+    });
   } catch (erro) {
-    return res.status(500).json({ Mensagem: erro.Mensagem });
+    return res.status(500).json({ Mensagem: erro.message });
   }
 };
 

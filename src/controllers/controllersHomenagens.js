@@ -898,15 +898,15 @@ ORDER BY h.id_homenagem;
 const CadastrarHomenagem = async (req, res) => {
   const {
     titulo,
-    resumo,
     descricao,
+    resumo,
     data_publi,
     data_criacao,
-    usuario,
     homenageados,
     assunto,
     link,
     img,
+    usuario,
   } = req.body;
 
   const TituloFormatado = primeiraLetraMaiuscula(titulo);
@@ -930,9 +930,6 @@ const CadastrarHomenagem = async (req, res) => {
       return res
         .status(400)
         .json({ Mensagem: "Há campo(s) vazio(s).", status: 400 });
-    }
-    if (data_criacao.length != 8) {
-      return res.status(200).json({ Mensagem: "Data Inválida.", status: 400 });
     }
 
     const lista_homenageados_id = [];
