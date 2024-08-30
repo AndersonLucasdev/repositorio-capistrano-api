@@ -1059,7 +1059,7 @@ const CadastrarHomenagem = async (req, res) => {
       .status(200)
       .json({ Mensagem: "Homenagem cadastrada com sucesso.", status: 200 });
   } catch (error) {
-    console.error(error); // Registra o erro para fins de depuração
+    console.error("Erro ao cadastrar homenagem:", error); // Registra o erro para fins de depuração
     return res
       .status(500)
       .json({ Mensagem: "Ocorreu um erro interno no servidor.", status: 500 });
