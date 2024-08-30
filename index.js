@@ -18,7 +18,11 @@ app.use( bodyParser.json() );
 app.use(bodyParser.urlencoded({     
   extended: true
 })); 
-app.use(cors())
+app.use(cors({
+  origin: 'http://localhost:3000', // Permite solicitações apenas do seu domínio local
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 
 app.use(cookieParser())
