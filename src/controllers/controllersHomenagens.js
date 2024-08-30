@@ -1024,7 +1024,7 @@ const CadastrarHomenagem = async (req, res) => {
         datacriacaoFormatada,
       ]
     );
-
+    console.log(CadastroHomenagem);
     const id_homenagem = CadastroHomenagem.rows[0].id_homenagem;
 
     // Relaciona na tabela homenageados
