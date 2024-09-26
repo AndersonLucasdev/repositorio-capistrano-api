@@ -108,8 +108,7 @@ const MostrarHomenagensAleatorio = async (req, res) => {
         u.nome as usuario, 
         li.link as links, 
         im.link as imgs, 
-        ass.nome as assuntos, 
-        ins.nome as instituicoes,
+        ass.nome as assuntos,
         ho.nome as homenageados
         FROM homenagem h
         INNER JOIN usuario u ON u.id_usuario = h.id_usuario
@@ -650,7 +649,7 @@ const MostrarPeloNomeHomenageado = async (req, res) => {
         INNER JOIN img im ON im.id_img = hi2.id_img
         WHERE ho.nome ILIKE '%' || $1 || '%'
         GROUP BY 
-          h.id_homenagem, h.data_criacao, h.titulo, h.resumo, h.data_publi, u.nome, li.link, im.link, ass.nome, inst.nome, ho.nome
+          h.id_homenagem, h.data_criacao, h.titulo, h.resumo, h.data_publi, u.nome, li.link, im.link, ass.nome, ho.nome
       ) as sub
       GROUP BY 
         sub.id_homenagem, sub.data_criacao, sub.titulo, sub.resumo, sub.data_publi, sub.usuario
