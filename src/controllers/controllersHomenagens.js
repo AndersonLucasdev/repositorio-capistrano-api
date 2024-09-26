@@ -1,5 +1,5 @@
 import pool from "../database/db.js";
-import { primeiraLetraMaiuscula } from "./controllersGerais.js";
+import { primeiraLetraMaiuscula, capitalizarEPontuar } from "./controllersGerais.js";
 
 const MostrarTodasHomenagens = async (req, res) => {
   try {
