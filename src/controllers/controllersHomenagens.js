@@ -583,7 +583,7 @@ const MostrarPeloNomeHomenagem = async (req, res) => {
         WHERE 
           h.titulo ILIKE '%' || '${titulo}' || '%'
         GROUP BY 
-          h.id_homenagem, h.titulo, h.resumo, u.nome, h.data_criacao, h.data_publi, ass.nome, li.link, im.link, inst.nome, ho.nome
+          h.id_homenagem, h.titulo, h.resumo, u.nome, h.data_criacao, h.data_publi, ass.nome, li.link, im.link, ho.nome
       ) as sub
       GROUP BY 
         sub.id_homenagem, 
