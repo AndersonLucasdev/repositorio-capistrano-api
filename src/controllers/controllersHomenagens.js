@@ -423,17 +423,17 @@ ORDER BY
 const HomenagensCriadasMaisAntigas = async (req, res) => {
   try {
     const homenagens = await pool.query(`
-    SELECT 
-        id_homenagem, 
-        titulo, 
-        data_criacao, 
-        data_publi, 
-        resumo, 
-        usuario,
-        string_agg(DISTINCT links, ', ') as links, 
-        string_agg(DISTINCT imgs, ', ') as imgs, 
-        string_agg(DISTINCT assuntos, ', ') as assuntos, 
-        string_agg(DISTINCT homenageados, ', ') as homenageados
+     SELECT 
+        sub.id_homenagem, 
+        sub.titulo, 
+        sub.data_criacao, 
+        sub.data_publi, 
+        sub.resumo, 
+        sub.usuario, 
+        string_agg(DISTINCT sub.links, ', ') as links, 
+        string_agg(DISTINCT sub.imgs, ', ') as imgs, 
+        string_agg(DISTINCT sub.assuntos, ', ') as assuntos, 
+        string_agg(DISTINCT sub.homenageados, ', ') as homenageados
       FROM (
         SELECT 
           o.id_homenagem, 
@@ -441,16 +441,13 @@ const HomenagensCriadasMaisAntigas = async (req, res) => {
           o.data_criacao, 
           o.data_publi, 
           o.resumo, 
-          u.nome as usuario,
+          u.nome as usuario, 
           li.link as links, 
-          im.link as imgs, 
+          im.link as imgs,
           ass.nome as assuntos, 
-          ho.nome as homenageados,
-          ROW_NUMBER() OVER (PARTITION BY o.id_homenagem ORDER BY o.data_criacao ASC) AS rn
-        FROM 
-          homenagem o
-        INNER JOIN 
-          usuario u ON u.id_usuario = o.id_usuario
+          ho.nome as homenageados
+        FROM homenagem o
+        INNER JOIN usuario u ON u.id_usuario = o.id_usuario
         INNER JOIN homenagens_assuntos has ON o.id_homenagem = has.id_homenagem
         INNER JOIN assunto ass ON ass.id_assunto = has.id_assunto
         INNER JOIN homenagens_links hl ON hl.id_homenagem = o.id_homenagem
@@ -459,13 +456,13 @@ const HomenagensCriadasMaisAntigas = async (req, res) => {
         INNER JOIN img im ON im.id_img = hi2.id_img
         INNER JOIN homenagens_homenageados hh ON hh.id_homenagem = o.id_homenagem
         INNER JOIN homenageado ho ON ho.id_homenageado = hh.id_homenageado
-        WHERE 
-          o.data_criacao IS NOT NULL
         GROUP BY 
-          o.id_homenagem, o.titulo, o.resumo, u.nome, o.data_criacao, o.data_publi, ass.nome, ho.nome
-      ) AS ranked
-      WHERE rn = 1
-      ORDER BY data_criacao ASC;
+          o.id_homenagem, o.titulo, o.data_criacao, o.data_publi, o.resumo, u.nome, li.link, im.link, ass.nome, ho.nome
+      ) as sub
+      GROUP BY 
+        sub.id_homenagem, sub.titulo, sub.data_criacao, sub.data_publi, sub.resumo, sub.usuario
+      ORDER BY 
+        sub.data_criacao ASC;
     `);
     if (homenagens.rows.length === 0) {
       return res
