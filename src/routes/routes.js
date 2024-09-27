@@ -189,7 +189,7 @@ route.post("/cadastrar_img", CadastrarImagem);
 route.get("/mostrar_homenagens", MostrarTodasHomenagens);
 route.get("/mostrar_homenagem/:id", MostrarHomenagemPeloID);
 route.get("/mostrar_homenagens_aleatorio", MostrarHomenagensAleatorio);
-route.post("mostrar_homenagem_nome", MostrarPeloNomeHomenagem);
+route.post("/mostrar_homenagem_nome", MostrarPeloNomeHomenagem);
 route.get("/mostrar_homenagens_antigas", HomenagensMaisAntigas);
 route.get("/mostrar_homenagens_recentes", HomenagensMaisRecentes);
 route.get("/mostrar_homenagens_capistrano", MostrarTodasHomenagensCapistrano)
@@ -200,7 +200,7 @@ route.get("/mostrar_homenagens_criadas_recentes", HomenagensCriadasMaisRecentes)
 route.post("/pesquisar_nome_homenageado", MostrarPeloNomeHomenageado);
 route.post("/pesquisar_nome_usuario", MostrarHomenagensPeloNomeUsuario);
 route.post("/mostrar_todas_homenagens_assunto", MostrarTodasHomenagensPorAssunto);
-route.get("/mostrar_obras_id_homenageado/:id_homenageado", MostrarHomenagensPeloIDHomenageado);
+route.get("/mostrar_homenagens_id_homenageado/:id_homenageado", MostrarHomenagensPeloIDHomenageado);
 route.get("/mostrar_homenagens_id_usuario/:id_usuario", MostrarHomenagemPeloIDUsuario);
 route.get(
   "/mostrar_homenagens_com_nome_e_id_usuario",
