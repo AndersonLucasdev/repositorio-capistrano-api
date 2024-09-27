@@ -1167,14 +1167,6 @@ const EditarHomenagem = async (req, res) => {
       );
     }
 
-    if (imgFormatada) {
-      await pool.query(
-        "UPDATE homenagem SET img = $1 WHERE id_homenagem = $2",
-        [imgFormatada, id_homenagem]
-      );
-    }
-
-
     return res
       .status(200)
       .json({ Mensagem: "Homenagem atualizada com sucesso." });
