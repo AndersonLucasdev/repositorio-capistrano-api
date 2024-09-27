@@ -1098,24 +1098,25 @@ const ExcluirHomenagem = async (req, res) => {
 
 const EditarHomenagem = async (req, res) => {
   try {
-    const { titulo,
+    const {
+       titulo,
       id_homenagem,
       link,
       usuario,
-      autor,
+      homenageado,
       assunto,
       resumo,
       descricao,
       img,
       data,
-      data_criacao } =
-      req.body;
+      data_criacao 
+    } = req.body;
 
     if (!titulo &&
       !link &&
       !data_criacao &&
       !usuario &&
-      !autor &&
+      !homenageado &&
       !assunto &&
       !resumo &&
       !descricao &&
