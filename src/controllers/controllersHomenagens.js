@@ -375,27 +375,36 @@ ORDER BY
 const HomenagensMaisAntigas = async (req, res) => {
   try {
     const homenagens = await pool.query(`
-      SELECT
-      h.id_homenagem,
-      h.titulo AS nome_homenagem,
-      h.data_criacao,
-      h.descricao,
-      STRING_AGG(im.link, ', ') AS imgs,
-      STRING_AGG(ho.nome, ', ') AS homenageados
-    FROM
-      homenagem h
-    INNER JOIN
-      homenagens_imgs hi2 ON hi2.id_homenagem = h.id_homenagem
-    INNER JOIN
-      img im ON im.id_img = hi2.id_img
-    INNER JOIN
-      homenagens_homenageados hh ON hh.id_homenagem = h.id_homenagem
-    INNER JOIN
-      homenageado ho ON ho.id_homenageado = hh.id_homenageado
-    GROUP BY
-      h.id_homenagem, h.titulo, h.data_criacao, h.descricao
-    ORDER BY 
-      h.data_criacao ASC;
+      SELECT 
+    sub.id_homenagem, sub.titulo, sub.data_criacao, sub.data_publi, sub.resumo, sub.usuario, 
+    string_agg(DISTINCT sub.links, ', ') as links, 
+    string_agg(DISTINCT sub.imgs, ', ') as imgs,
+    string_agg(DISTINCT sub.assuntos, ', ') as assuntos, 
+    string_agg(DISTINCT sub.homenageados, ', ') as homenageados
+FROM (
+    SELECT 
+        o.id_homenagem, o.titulo, o.data_criacao, o.data_publi, o.resumo, u.nome as usuario, 
+        li.link as links, 
+        im.link as imgs,
+        ass.nome as assuntos,
+        ho.nome as homenageados
+    FROM homenagem o
+    INNER JOIN usuario u ON u.id_usuario = o.id_usuario
+    INNER JOIN homenagens_assuntos has ON o.id_homenagem = has.id_homenagem
+    INNER JOIN assunto ass ON ass.id_assunto = has.id_assunto
+    INNER JOIN homenagens_links hl ON hl.id_homenagem = o.id_homenagem
+    INNER JOIN link li ON li.id_link = hl.id_link
+    INNER JOIN homenagens_imgs hi2 ON hi2.id_homenagem = o.id_homenagem
+    INNER JOIN img im ON im.id_img = hi2.id_img
+    INNER JOIN homenagens_homenageados hh ON hh.id_homenagem = o.id_homenagem
+    INNER JOIN homenageado ho ON ho.id_homenageado = hh.id_homenageado
+    GROUP BY 
+        o.id_homenagem, o.titulo, o.data_criacao, o.data_publi, o.resumo, u.nome, li.link, im.link, ass.nome, ho.nome
+) as sub
+GROUP BY 
+    sub.id_homenagem, sub.titulo, sub.data_criacao, sub.data_publi, sub.resumo, sub.usuario
+ORDER BY 
+    sub.data_publi ASC;
       `);
     if (homenagens.rows.length === 0) {
       return res
