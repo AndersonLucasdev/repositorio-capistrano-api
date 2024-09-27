@@ -144,7 +144,7 @@ route.get("/mostrar_todos_homenageados", MostrarTodosHomenageados)
 route.post("/mostrar_homenageado_nome", MostrarHomenageadopeloNome)
 route.get("/mostrar_homenageado/:id", MostrarHomenageadoID)
 route.patch("/editar_autor", EditarHomenageado)
-route.delete("excluir_homenageado/:id", ExcluirHomenageado)
+route.delete("/excluir_homenageado/:id", ExcluirHomenageado)
 
 // Usuários
 route.get("/mostrar_todos_usuarios", MostrarTodosUsuarios);
@@ -154,11 +154,11 @@ route.get("/mostrar_autores_dos_usuarios", AutorCadaUsuario);
 route.post("/cadastro_usuarios", CadastrarUsuario);
 route.post("/login", Login);
 
-route.delete("excluir_usuario/:id", removeUsuarioID);
+route.delete("/excluir_usuario/:id", removeUsuarioID);
 
 // token
-route.post("validar_token", validarToken);
-route.post("deletar_token", deletarToken);
+route.post("/validar_token", validarToken);
+route.post("/deletar_token", deletarToken);
 
 // administrador
 route.post("/cadastrar_adm", CadastrarAdministrador);
