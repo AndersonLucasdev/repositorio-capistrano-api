@@ -178,7 +178,8 @@ const Login = async (req, res) => {
     );
 
     // Verifica se o usuário é administrador
-    const isAdmin = verificaUsuarioAdm.rows.length > 0;
+    const tipoUsuario = verificaUsuarioAdm.rows.length > 0 ? 'admin' : 'user';
+   
 
     res.cookie("token", token, { httpOnly: true });
     
@@ -187,7 +188,8 @@ const Login = async (req, res) => {
       token,
       usuarioId,
       novoUsuario,
-      tipoUsuario: isAdmin ? 'admin' : 'user',
+      usuarioSenha,
+      tipoUsuario,
     });
     
   } catch (erro) {
