@@ -69,7 +69,7 @@ const MostrarHomenagensComNomeEIdUsuario = async (req, res) => {
       h.titulo ILIKE '%' || '${titulo}' || '%'
       AND h.id_usuario = ${id_usuario}
       GROUP BY 
-      h.id_homenagem, h.titulo, h.resumo, u.nome, h.data_publi, ass.nome, li.link, im.link, h.data_criacao, ins.nome
+      h.id_homenagem, h.titulo, h.resumo, u.nome, h.data_publi, ass.nome, li.link, im.link, h.data_criacao
       ORDER BY 
       h.id_homenagem;
 
@@ -216,8 +216,7 @@ const MostrarTodasHomenagensPorAssunto = async (req, res) => {
     ass.nome, 
     li.link, 
     im.link, 
-    h.data_criacao, 
-    ins.nome
+    h.data_criacao
       `
     );
 
@@ -308,7 +307,7 @@ const HomenagensOrdemAlfabetica = async (req, res) => {
     INNER JOIN homenagens_homenageados hh ON hh.id_homenagem = o.id_homenagem
     INNER JOIN homenageado ho ON ho.id_homenageado = hh.id_homenageado
     WHERE o.data_publi IS NOT NULL
-    GROUP BY o.id_homenagem, o.titulo, o.resumo, u.nome, o.data_criacao, o.data_publi, ass.nome, ins.nome
+    GROUP BY o.id_homenagem, o.titulo, o.resumo, u.nome, o.data_criacao, o.data_publi, ass.nome
     ORDER BY o.id_homenagem, o.titulo;
     `);
     if (homenagens.rows.length === 0) {
@@ -352,7 +351,7 @@ FROM (
     INNER JOIN homenagens_homenageados hh ON hh.id_homenagem = o.id_homenagem
     INNER JOIN homenageado ho ON ho.id_homenageado = hh.id_homenageado
     GROUP BY 
-        o.id_homenagem, o.titulo, o.data_criacao, o.data_publi, o.resumo, u.nome, li.link, im.link, ass.nome, ins.nome, ho.nome
+        o.id_homenagem, o.titulo, o.data_criacao, o.data_publi, o.resumo, u.nome, li.link, im.link, ass.nome, ho.nome
 ) as sub
 GROUP BY 
     sub.id_homenagem, sub.titulo, sub.data_criacao, sub.data_publi, sub.resumo, sub.usuario
@@ -454,7 +453,7 @@ const HomenagensCriadasMaisAntigas = async (req, res) => {
         WHERE 
           o.data_criacao IS NOT NULL
         GROUP BY 
-          o.id_homenagem, o.titulo, o.resumo, u.nome, o.data_criacao, o.data_publi, ass.nome, ins.nome, ho.nome
+          o.id_homenagem, o.titulo, o.resumo, u.nome, o.data_criacao, o.data_publi, ass.nome, ho.nome
       ) AS ranked
       WHERE rn = 1
       ORDER BY data_criacao ASC;
@@ -510,7 +509,7 @@ const HomenagensCriadasMaisRecentes = async (req, res) => {
         INNER JOIN homenagens_homenageados hh ON hh.id_homenagem = o.id_homenagem
         INNER JOIN homenageado ho ON ho.id_homenageado = hh.id_homenageado
         GROUP BY 
-          o.id_homenagem, o.titulo, o.data_criacao, o.data_publi, o.resumo, u.nome, li.link, im.link, ass.nome, ins.nome, ho.nome
+          o.id_homenagem, o.titulo, o.data_criacao, o.data_publi, o.resumo, u.nome, li.link, im.link, ass.nome, ho.nome
       ) as sub
       GROUP BY 
         sub.id_homenagem, sub.titulo, sub.data_criacao, sub.data_publi, sub.resumo, sub.usuario
