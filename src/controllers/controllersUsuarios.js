@@ -177,22 +177,22 @@ const Login = async (req, res) => {
       [usuarioId]
     );
 
-    if (verificaUsuarioAdm.rows.length > 0) {
-      res.cookie("token", token, { httpOnly: true });
-      res
-        .status(200)
-        .json({
-          token,
-          usuarioId,
-          novoUsuario,
-          usuarioSenha,
-          tipoUsuario: isAdmin ? 'admin' : 'user',
-        });
-    }
+    // Verifica se o usuário é administrador
+    const isAdmin = verificaUsuarioAdm.rows.length > 0;
 
-  } catch (erro) {
-      return res.status(500).json({ Mensagem: erro.Mensagem });
+    res.cookie("token", token, { httpOnly: true });
     
+    // Retorna a resposta com tipoUsuario
+    res.status(200).json({
+      token,
+      usuarioId,
+      novoUsuario,
+      tipoUsuario: isAdmin ? 'admin' : 'user',
+    });
+    
+  } catch (erro) {
+    console.error("Erro no login:", erro);
+    return res.status(500).json({ Mensagem: erro.message || "Erro interno." });
   }
 };
 
