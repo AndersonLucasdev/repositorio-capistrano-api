@@ -1099,7 +1099,7 @@ const ExcluirHomenagem = async (req, res) => {
 const EditarHomenagem = async (req, res) => {
   try {
     const { titulo,
-      id_obra,
+      id_homenagem,
       link,
       usuario,
       autor,
