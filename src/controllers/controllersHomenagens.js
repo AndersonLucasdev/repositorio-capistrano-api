@@ -1168,6 +1168,130 @@ const EditarHomenagem = async (req, res) => {
       );
     }
 
+    // Atualizar homenageados
+    if (homenageado) {
+      // Remover homenageados existentes
+      await pool.query("DELETE FROM homenagens_homenageados WHERE id_homenagem = $1", [id_homenagem]);
+
+      // Inserir novos homenageados
+      for (const homenageado_nome of homenageado) {
+        const homenageadoFormatado = primeiraLetraMaiuscula(homenageado_nome);
+        const verificaHomenageado = await pool.query(
+          "SELECT id_homenageado FROM homenageado WHERE nome = $1",
+          [homenageadoFormatado]
+        );
+
+        if (verificaHomenageado.rows.length > 0) {
+          const homenageado_id = verificaHomenageado.rows[0].id_homenageado;
+          await pool.query(
+            "INSERT INTO homenagens_homenageados (id_homenagem, id_homenageado) VALUES ($1, $2)",
+            [id_homenagem, homenageado_id]
+          );
+        } else {
+          return res
+            .status(400)
+            .json({ Mensagem: "Homenageado não encontrado.", status: 400 });
+        }
+      }
+    }
+
+    // Atualizar assuntos
+    if (assunto) {
+      // Remover assuntos existentes
+      await pool.query("DELETE FROM homenagens_assuntos WHERE id_homenagem = $1", [id_homenagem]);
+
+      // Inserir novos assuntos
+      for (const assunto_nome of assunto) {
+        const assuntoFormatado = primeiraLetraMaiuscula(assunto_nome);
+        const verificaAssunto = await pool.query(
+          "SELECT id_assunto FROM assunto WHERE nome = $1",
+          [assuntoFormatado]
+        );
+
+        if (verificaAssunto.rows.length > 0) {
+          const assunto_id = verificaAssunto.rows[0].id_assunto;
+          await pool.query(
+            "INSERT INTO homenagens_assuntos (id_homenagem, id_assunto) VALUES ($1, $2)",
+            [id_homenagem, assunto_id]
+          );
+        } else {
+          return res
+            .status(400)
+            .json({ Mensagem: "Assunto não encontrado.", status: 400 });
+        }
+      }
+    }
+
+    // Atualizar links
+    if (link) {
+      // Remover links existentes
+      await pool.query("DELETE FROM homenagens_links WHERE id_homenagem = $1", [id_homenagem]);
+
+      // Inserir novos links
+      for (const link_nome of link) {
+        const linkFormatado = link_nome.trim();
+        const verificaLink = await pool.query(
+          "SELECT id_link FROM link WHERE link = $1",
+          [linkFormatado]
+        );
+
+        if (verificaLink.rows.length > 0) {
+          const link_id = verificaLink.rows[0].id_link;
+          await pool.query(
+            "INSERT INTO homenagens_links (id_homenagem, id_link) VALUES ($1, $2)",
+            [id_homenagem, link_id]
+          );
+        } else {
+          // Inserir novo link se não existir
+          const CadastroLink = await pool.query(
+            "INSERT INTO link (link) VALUES ($1) RETURNING id_link",
+            [linkFormatado]
+          );
+
+          const link_id = CadastroLink.rows[0].id_link;
+          await pool.query(
+            "INSERT INTO homenagens_links (id_homenagem, id_link) VALUES ($1, $2)",
+            [id_homenagem, link_id]
+          );
+        }
+      }
+    }
+
+    // Atualizar imagens
+    if (img) {
+      // Remover imagens existentes
+      await pool.query("DELETE FROM homenagens_imgs WHERE id_homenagem = $1", [id_homenagem]);
+
+      // Inserir novas imagens
+      for (const img_nome of img) {
+        const imgFormatada = img_nome.trim();
+        const verificaImg = await pool.query(
+          "SELECT id_img FROM img WHERE link = $1",
+          [imgFormatada]
+        );
+
+        if (verificaImg.rows.length > 0) {
+          const img_id = verificaImg.rows[0].id_img;
+          await pool.query(
+            "INSERT INTO homenagens_imgs (id_homenagem, id_img) VALUES ($1, $2)",
+            [id_homenagem, img_id]
+          );
+        } else {
+          // Inserir nova imagem se não existir
+          const CadastroImg = await pool.query(
+            "INSERT INTO img (link) VALUES ($1) RETURNING id_img",
+            [imgFormatada]
+          );
+
+          const img_id = CadastroImg.rows[0].id_img;
+          await pool.query(
+            "INSERT INTO homenagens_imgs (id_homenagem, id_img) VALUES ($1, $2)",
+            [id_homenagem, img_id]
+          );
+        }
+      }
+    }
+
     return res
       .status(200)
       .json({ Mensagem: "Homenagem atualizada com sucesso." });
