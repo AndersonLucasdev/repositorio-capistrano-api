@@ -191,6 +191,7 @@ const Login = async (req, res) => {
       usuarioSenha,
       tipoUsuario,
     });
+    localStorage.setItem('tipoUsuario', tipoUsuario);
     
   } catch (erro) {
     console.error("Erro no login:", erro);
