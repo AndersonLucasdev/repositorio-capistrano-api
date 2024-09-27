@@ -173,10 +173,7 @@ const Login = async (req, res) => {
     console.log('passei no token')
 
     const verificaUsuarioAdm = await pool.query(
-      `SELECT u.id_usuario, u.nome 
-        FROM usuario u 
-        inner join administrador a on a.id_usuario = u.id_usuario
-        where a.id_usuario = $1`,
+      `SELECT * FROM administrador WHERE id_usuario = $1`,
       [usuarioId]
     );
 
@@ -189,15 +186,9 @@ const Login = async (req, res) => {
           usuarioId,
           novoUsuario,
           usuarioSenha,
-          tipoUsuario: admin,
+          tipoUsuario: isAdmin ? 'admin' : 'user',
         });
     }
-
-    res.cookie("token", token, { httpOnly: true });
-
-    res
-      .status(200)
-      .json({ token, usuarioId, novoUsuario, usuarioSenha, tipoUsuario: "user" });
 
   } catch (erro) {
       return res.status(500).json({ Mensagem: erro.Mensagem });
