@@ -1097,6 +1097,7 @@ const ExcluirHomenagem = async (req, res) => {
 };
 
 const EditarHomenagem = async (req, res) => {
+  
   try {
     const {
        titulo,
@@ -1135,7 +1136,7 @@ const EditarHomenagem = async (req, res) => {
 
     if (TituloFormatado) {
       await pool.query(
-        "UPDATE homenagem SET nome = $1 WHERE id_homenagem = $2",
+        "UPDATE homenagem SET titulo = $1 WHERE id_homenagem = $2",
         [TituloFormatado, id_homenagem]
       );
     }
@@ -1166,6 +1167,14 @@ const EditarHomenagem = async (req, res) => {
         "UPDATE homenagem SET descricao = $1 WHERE id_homenagem = $2",
         [descricaoFormatada, id_homenagem]
       );
+    }
+
+    if (usuario) {
+      // Atualiza o usuario_id na tabela obra
+      await pool.query("UPDATE homenagem SET id_usuario = $1 WHERE id_homenagem = $2", [
+        usuario,
+        id_homenagem
+      ]);
     }
 
     // Atualizar homenageados
