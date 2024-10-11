@@ -18,8 +18,16 @@ app.use( bodyParser.json() );
 app.use(bodyParser.urlencoded({     
   extended: true
 })); 
+const allowedOrigins = ['http://localhost:3000', 'https://capistrano-frontend.vercel.app'];
+
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: function (origin, callback) {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
